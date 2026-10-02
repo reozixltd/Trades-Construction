@@ -1,0 +1,19 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/sections/PageHeader.astro';
+import ServicesGrid from '@/components/sections/ServicesGrid.astro';
+import Pricing from '@/components/sections/Pricing.astro';
+import CtaBand from '@/components/sections/CtaBand.astro';
+import { business } from '@/config/business';
+---
+
+<BaseLayout title="Services" description={`Building, carpentry, renovations and repairs across ${business.headline.area}. Licensed trades and written prices.`}>
+  <PageHeader
+    title="Services"
+    lead="Four trades under one licence and one team, from a quick repair to a full extension."
+    crumbs={[{ label: 'Services' }]}
+  />
+  <ServicesGrid title="What we can do for you" lead="Each service page lists what's included, typical time and starting price." />
+  <Pricing />
+  <CtaBand />
+</BaseLayout>

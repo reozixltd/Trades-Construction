@@ -1,0 +1,38 @@
+[
+  {
+    "id": "r1",
+    "name": "Melissa T.",
+    "suburb": "Kellyville",
+    "rating": 5,
+    "service": "Extensions & new builds",
+    "text": "They quoted a fixed price, gave us a schedule and finished the week they said. The supervisor sent photos every Friday.",
+    "date": "2026-04"
+  },
+  {
+    "id": "r2",
+    "name": "Daniel K.",
+    "suburb": "Blacktown",
+    "rating": 5,
+    "service": "Kitchen & bathroom renovations",
+    "text": "Bathroom done in under four weeks. Clean every afternoon and the waterproofing certificate came with the invoice.",
+    "date": "2026-03"
+  },
+  {
+    "id": "r3",
+    "name": "Priya S.",
+    "suburb": "North Parramatta",
+    "rating": 5,
+    "service": "Repairs & maintenance",
+    "text": "Sent photos of our rotten verandah on a Sunday, got a price range Monday and they fixed it that week. Matched the old boards perfectly.",
+    "date": "2026-02"
+  },
+  {
+    "id": "r4",
+    "name": "Graham W.",
+    "suburb": "Castle Hill",
+    "rating": 4,
+    "service": "Carpentry & joinery",
+    "text": "Beautiful study wall. Install took a day longer than planned, but they told us early and the finish is excellent.",
+    "date": "2025-12"
+  }
+]

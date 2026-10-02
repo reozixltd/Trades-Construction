@@ -1,0 +1,73 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/sections/PageHeader.astro';
+import TrustStrip from '@/components/layout/TrustStrip.astro';
+import ServicesGrid from '@/components/sections/ServicesGrid.astro';
+import ProjectGrid from '@/components/sections/ProjectGrid.astro';
+import QuoteSection from '@/components/sections/QuoteSection.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import Button from '@/components/ui/Button.astro';
+import Photo from '@/components/ui/Photo.astro';
+import { isPhotoSlot } from '@/lib/photos';
+import { business } from '@/config/business';
+import { telHref } from '@/lib/format';
+
+export async function getStaticPaths() {
+  const areas = await getCollection('areas');
+  return areas.map((area) => ({ params: { slug: area.id }, props: { area } }));
+}
+
+interface Props {
+  area: CollectionEntry<'areas'>;
+}
+const { area } = Astro.props;
+const a = area.data;
+const { Content } = await render(area);
+const photoSlot = `area-${area.id}`;
+const localNames = [a.suburb, ...a.nearbySuburbs].map((n) => n.toLowerCase());
+const projects = (await getCollection('projects')).filter((p) => localNames.includes(p.data.suburb.toLowerCase()));
+---
+
+<BaseLayout title={`Builders & repairs in ${a.suburb} ${a.postcode}`} description={a.seoDescription}>
+  <PageHeader
+    eyebrow={a.region}
+    title={`Builders, carpenters & repairs in ${a.suburb}`}
+    lead={`Licensed local trades for ${a.suburb} ${a.postcode} and nearby ${a.nearbySuburbs.slice(0, 3).join(', ')}. ${a.travelTime}.`}
+    crumbs={[{ label: 'Areas', href: '/areas/' }, { label: a.suburb }]}
+  >
+    <Button href={`/quote/?suburb=${encodeURIComponent(a.suburb)}`} variant="accent" size="lg" iconEnd="arrowRight">Get a quote in {a.suburb}</Button>
+    <Button href={telHref(business.contact.phone)} variant="outline" size="lg" icon="phone">{business.contact.phone}</Button>
+  </PageHeader>
+  <TrustStrip />
+
+  <section class="section">
+    <div class="container local">
+      <div class="prose">
+        <h2>Working in {a.suburb}</h2>
+        <Content />
+        <p>We also cover {a.nearbySuburbs.join(', ')}.</p>
+      </div>
+      {isPhotoSlot(photoSlot) && <Photo slot={photoSlot} ratio="4 / 3" sizes="(min-width: 960px) 40vw, 100vw" />}
+    </div>
+  </section>
+
+  {
+    projects.length > 0 && (
+      <section class="section section--surface" aria-labelledby="local-jobs">
+        <div class="container">
+          <SectionHeading eyebrow="Local jobs" title={`Recent work near ${a.suburb}`} id="local-jobs" />
+          <ProjectGrid projects={projects} />
+        </div>
+      </section>
+    )
+  }
+
+  <ServicesGrid title={`Services in ${a.suburb}`} />
+  <QuoteSection title={`Get a quote in ${a.suburb}`} source={`area:${area.id}`} />
+</BaseLayout>
+
+<style>
+  .local { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xl); align-items: start; }
+  @media (min-width: 960px) { .local { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: var(--space-2xl); } }
+</style>

@@ -1,0 +1,29 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/sections/PageHeader.astro';
+import ProjectGrid from '@/components/sections/ProjectGrid.astro';
+import CtaBand from '@/components/sections/CtaBand.astro';
+import { business } from '@/config/business';
+
+const projects = await getCollection('projects');
+---
+
+<BaseLayout title="Projects" description={`Recent extensions, renovations, joinery and repairs across ${business.headline.area}.`}>
+  <PageHeader
+    title="Recent projects"
+    lead={business.demoMode ? 'Sample projects for a fictional business. Filter by the kind of work you’re planning.' : 'Recent jobs and the suburbs they were in. Filter by the kind of work you’re planning.'}
+    crumbs={[{ label: 'Projects' }]}
+  />
+  <section class="section">
+    <div class="container">
+      <ProjectGrid projects={projects} filterable />
+      {business.demoMode && <p class="note">Demo: photos are placeholders. A live site shows the business’s own, unedited job photos.</p>}
+    </div>
+  </section>
+  <CtaBand title="Planning something similar?" />
+</BaseLayout>
+
+<style>
+  .note { margin-top: var(--space-lg); color: var(--color-text-subtle); font-size: var(--text-body-sm); }
+</style>

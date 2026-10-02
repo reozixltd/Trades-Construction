@@ -1,0 +1,48 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Photo from '../ui/Photo.astro';
+import Placeholder from '../ui/Placeholder.astro';
+import { isPhotoSlot } from '@/lib/photos';
+import Badge from '../ui/Badge.astro';
+import { business } from '@/config/business';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  serviceTitle: string;
+}
+const { project, serviceTitle } = Astro.props;
+const p = project.data;
+const slot = `project-${project.id}`;
+---
+
+<article class="project" data-service={p.service}>
+  {isPhotoSlot(slot) ? (
+    <Photo slot={slot} ratio="4 / 3" sizes="(min-width: 1200px) 33vw, (min-width: 640px) 50vw, 100vw" tone={p.tone} />
+  ) : (
+    <Placeholder tone={p.tone} label={`Job photo · ${p.suburb}`} caption={p.title} />
+  )}
+  <div class="project__body">
+    <p class="project__tags"><Badge tone="neutral">{serviceTitle}</Badge>{business.demoMode && <Badge tone="warning">Sample</Badge>}</p>
+    <h3 class="project__title">{p.title}</h3>
+    <p class="project__meta">{p.suburb} · {p.completed} · {p.duration}</p>
+    <p class="project__summary">{p.summary}</p>
+    <dl class="project__specs">
+      {p.specs.map((s) => <div><dt>{s.label}</dt><dd>{s.value}</dd></div>)}
+    </dl>
+  </div>
+</article>
+
+<style>
+  .project { display: flex; flex-direction: column; background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md); overflow: hidden; }
+  .project :global(.ph), .project :global(.photo) { border-radius: 0; }
+  .project__body { display: flex; flex-direction: column; flex: 1; padding: var(--space-lg); }
+  .project__tags { display: flex; flex-wrap: wrap; gap: var(--space-2xs); }
+  .project__title { margin-top: var(--space-sm); font-size: var(--text-title); line-height: 1.35; }
+  .project__meta { margin-top: 2px; color: var(--color-text-subtle); font-size: var(--text-body-sm); }
+  .project__summary { margin-top: var(--space-xs); color: var(--color-text-muted); font-size: var(--text-body-sm); line-height: 1.55; }
+  .project__specs { display: grid; grid-template-columns: repeat(3, 1fr); margin: auto 0 0; padding-top: var(--space-md); }
+  .project__specs div { padding-top: var(--space-sm); border-top: 1px solid var(--color-inset); }
+  .project__specs div + div { padding-left: var(--space-xs); }
+  .project__specs dt { color: var(--color-text-subtle); font-size: var(--text-label-sm); font-weight: 700; letter-spacing: var(--tracking-label-sm); text-transform: uppercase; }
+  .project__specs dd { margin: 0; font-size: var(--text-body-sm); font-weight: 700; }
+</style>

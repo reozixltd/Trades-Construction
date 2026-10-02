@@ -1,0 +1,91 @@
+---
+/**
+ * "How we price" — plain-language replacement for the Stitch mock's GMP / cost-plus tiers.
+ * Shows full "from" prices incl. GST (NSW: no partial pricing).
+ */
+import { getCollection } from 'astro:content';
+import { formatAud } from '@/lib/format';
+import SectionHeading from '../ui/SectionHeading.astro';
+import Icon from '../ui/Icon.astro';
+import Button from '../ui/Button.astro';
+import { pricingIntro, pricingModels } from '@/config/pricing';
+
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+const priceFor = (m: (typeof pricingModels)[number]) => {
+  if ('text' in m.price) return m.price.text;
+  const id = m.price.fromService;
+  const s = services.find((x) => x.id === id);
+  return s ? `${formatAud(s.data.priceFrom)} ${s.data.priceUnit}`.trim() : '';
+};
+const models = pricingModels.map((m) => ({ ...m, priceText: priceFor(m) }));
+
+---
+
+<section class="section" aria-labelledby="pricing-title">
+  <div class="container">
+    <SectionHeading
+      eyebrow="How we price"
+      title={pricingIntro.title}
+      lead={pricingIntro.lead}
+      id="pricing-title"
+      align="center"
+    />
+
+    <div class="models">
+      {models.map((m) => (
+        <article class:list={['model', { 'model--featured': m.featured }]}>
+          {m.featured && <p class="model__flag">Most jobs</p>}
+          <h3 class="model__name">{m.name}</h3>
+          <p class="model__price">{m.priceText}</p>
+          <p class="model__note">{m.note}</p>
+          <ul role="list" class="model__points">
+            {m.points.map((pt) => <li><Icon name="check" size={16} />{pt}</li>)}
+          </ul>
+          <Button href={m.cta.href} variant={m.featured ? 'accent' : 'outline'} block>{m.cta.label}</Button>
+        </article>
+      ))}
+    </div>
+
+    <div class="table-wrap">
+      <table class="prices">
+        <caption>Starting prices by service (incl. GST)</caption>
+        <thead><tr><th scope="col">Service</th><th scope="col">From</th><th scope="col">What that covers</th></tr></thead>
+        <tbody>
+          {services.map((s) => (
+            <tr>
+              <th scope="row"><a href={`/services/${s.id}/`}>{s.data.title}</a></th>
+              <td class="num">{formatAud(s.data.priceFrom)}{s.data.priceUnit && ` ${s.data.priceUnit}`}</td>
+              <td>{s.data.priceNote}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<style>
+  .models { display: grid; gap: var(--gutter); }
+  .model { position: relative; display: flex; flex-direction: column; padding: var(--space-lg); background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md); }
+  .model--featured { border: 2px solid var(--color-accent); box-shadow: var(--shadow-2); }
+  .model__flag { position: absolute; top: -0.75rem; left: var(--space-lg); padding: 0.15rem 0.6rem; background: var(--color-accent); color: var(--color-on-accent); border-radius: var(--radius-sm); font-size: var(--text-label-sm); font-weight: 700; letter-spacing: var(--tracking-label-sm); text-transform: uppercase; }
+  .model__name { font-family: var(--font-body); font-size: var(--text-label); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--color-text-muted); }
+  .model__price { margin-top: var(--space-xs); font-family: var(--font-display); font-size: var(--text-headline-md); font-weight: var(--display-weight); line-height: 1.2; }
+  .model__note { margin-top: var(--space-xs); color: var(--color-text-muted); font-size: var(--text-body-sm); }
+  .model__points { margin-block: var(--space-lg); font-size: var(--text-body-sm); flex: 1; }
+  .model__points li { display: flex; gap: var(--space-xs); }
+  .model__points li + li { margin-top: var(--space-xs); }
+  .model__points :global(.icon) { margin-top: 3px; color: var(--color-success); }
+
+  .table-wrap { margin-top: var(--space-xl); overflow-x: auto; border: 1px solid var(--color-line); border-radius: var(--radius-md); background: var(--color-surface); }
+  .prices { width: 100%; border-collapse: collapse; font-size: var(--text-body-sm); }
+  .prices caption { padding: var(--space-md); text-align: left; font-weight: 700; border-bottom: 1px solid var(--color-line); }
+  .prices th, .prices td { padding: var(--space-sm) var(--space-md); text-align: left; vertical-align: top; border-bottom: 1px solid var(--color-inset); }
+  .prices thead th { background: var(--color-canvas); color: var(--color-text-subtle); font-size: var(--text-label-sm); letter-spacing: var(--tracking-label-sm); text-transform: uppercase; }
+  .prices tbody tr:nth-child(even) { background: var(--color-canvas); }
+  .prices tbody tr:last-child > * { border-bottom: 0; }
+  .prices .num { font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .prices td:last-child { min-width: 16rem; color: var(--color-text-muted); }
+
+  @media (min-width: 900px) { .models { grid-template-columns: repeat(3, 1fr); align-items: stretch; } }
+</style>

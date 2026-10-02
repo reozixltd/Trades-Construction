@@ -1,0 +1,88 @@
+---
+/**
+ * Schematic service-area map drawn from business.areas coordinates (inline SVG:
+ * no map embed, works offline, follows the theme tokens). Covered suburbs form
+ * a shaded zone; "ask us" suburbs are hollow; the workshop is the home marker.
+ */
+import { business } from '@/config/business';
+import { projectPoints } from '@/lib/geo';
+
+const MAX_KM = 45; // drop far-away "ask us" suburbs so the map stays readable
+const km = (a: { lat?: number; lng?: number }) =>
+  a.lat === undefined || a.lng === undefined
+    ? Infinity
+    : Math.hypot((a.lat - business.base.lat) * 111, (a.lng - business.base.lng) * 111 * Math.cos((a.lat * Math.PI) / 180));
+
+const covered = business.areas.covered.map((a) => ({ ...a, id: a.suburb, kind: 'covered' as const }));
+const nearby = business.areas.nearby.filter((a) => km(a) <= MAX_KM).map((a) => ({ ...a, id: a.suburb, kind: 'nearby' as const }));
+const all = [...covered, ...nearby, { id: '__base', ...business.base, kind: 'base' as const }];
+
+const { points, width, height } = projectPoints(all, { width: 560, padding: 44 });
+const pos = Object.fromEntries(points.map((p) => [p.id, p]));
+const radius = 46; // ~ covered-zone blob radius in map units
+const labelled = new Set(covered.filter((c) => c.page).map((c) => c.id));
+
+/** Label placement: flip left near the right edge; drop below when the workshop marker is close. */
+const label = (id: string) => {
+  const p = pos[id]!;
+  const nearBase = pos.__base && id !== '__base' && Math.hypot(p.x - pos.__base.x, p.y - pos.__base.y) < 40;
+  if (nearBase) return { x: p.x, y: p.y + 20, anchor: 'middle' };
+  if (p.x > width - 120) return { x: p.x - 9, y: p.y + 4, anchor: 'end' };
+  return { x: p.x + 9, y: p.y + 4, anchor: 'start' };
+};
+---
+
+<figure class="map">
+  <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-labelledby="map-title map-desc">
+    <title id="map-title">Service area map</title>
+    <desc id="map-desc">
+      {`We cover ${covered.map((c) => c.suburb).join(', ')}. By arrangement: ${nearby.map((n) => n.suburb).join(', ')}.`}
+    </desc>
+    <g class="map__zone">
+      {covered.map((c) => pos[c.id] && <circle cx={pos[c.id]!.x} cy={pos[c.id]!.y} r={radius} />)}
+    </g>
+    {nearby.map((n) => pos[n.id] && (
+      <g class="map__nearby">
+        <circle cx={pos[n.id]!.x} cy={pos[n.id]!.y} r="5" />
+        <text x={label(n.id).x} y={label(n.id).y} text-anchor={label(n.id).anchor}>{n.suburb}</text>
+      </g>
+    ))}
+    {covered.map((c) => pos[c.id] && (
+      <g class:list={['map__pt', { 'map__pt--major': labelled.has(c.id) }]}>
+        <circle cx={pos[c.id]!.x} cy={pos[c.id]!.y} r={labelled.has(c.id) ? 5 : 3}><title>{c.suburb} {c.postcode}</title></circle>
+        {labelled.has(c.id) && <text x={label(c.id).x} y={label(c.id).y} text-anchor={label(c.id).anchor}>{c.suburb}</text>}
+      </g>
+    ))}
+    {pos.__base && (
+      <g class="map__base">
+        <rect x={pos.__base.x - 8} y={pos.__base.y - 8} width="16" height="16" rx="3" />
+        <text x={pos.__base.x} y={pos.__base.y - 14} text-anchor="middle">Workshop · {business.baseSuburb}</text>
+      </g>
+    )}
+  </svg>
+  <figcaption class="map__key">
+    <span><i class="key key--zone"></i>Covered</span>
+    <span><i class="key key--nearby"></i>Ask us</span>
+    <span><i class="key key--base"></i>Our workshop</span>
+  </figcaption>
+</figure>
+
+<style>
+  .map { margin: 0; padding: var(--space-md); background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md); }
+  svg { width: 100%; height: auto; display: block; font-family: var(--font-body); }
+  /* Opacity on the group, not each circle, so overlapping circles read as one even zone. */
+  .map__zone { opacity: 0.14; }
+  .map__zone circle { fill: var(--color-accent); stroke: none; }
+  .map__pt circle { fill: var(--color-accent); }
+  .map__pt--major circle { stroke: var(--color-surface); stroke-width: 2; }
+  .map__pt text, .map__nearby text, .map__base text { font-size: 13px; font-weight: 600; fill: var(--color-text); paint-order: stroke; stroke: var(--color-surface); stroke-width: 4px; stroke-linejoin: round; }
+  .map__nearby circle { fill: var(--color-surface); stroke: var(--color-text-subtle); stroke-width: 1.5; stroke-dasharray: 2 2; }
+  .map__nearby text { fill: var(--color-text-muted); font-weight: 500; }
+  .map__base rect { fill: var(--color-ink); }
+  .map__key { display: flex; flex-wrap: wrap; gap: var(--space-md); margin-top: var(--space-xs); color: var(--color-text-muted); font-size: var(--text-body-sm); }
+  .map__key span { display: inline-flex; align-items: center; gap: var(--space-2xs); }
+  .key { display: inline-block; width: 12px; height: 12px; border-radius: 50%; }
+  .key--zone { background: var(--color-accent); opacity: 0.35; }
+  .key--nearby { border: 1.5px dashed var(--color-text-subtle); }
+  .key--base { background: var(--color-ink); border-radius: 3px; }
+</style>

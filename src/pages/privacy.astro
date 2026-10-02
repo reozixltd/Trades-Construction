@@ -1,0 +1,35 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/sections/PageHeader.astro';
+import { business } from '@/config/business';
+---
+
+<BaseLayout title="Privacy policy" description={`How ${business.legalName} collects, uses and stores your personal information.`}>
+  <PageHeader title="Privacy policy" lead="What we collect when you contact us, why, and what you can ask us to do with it." crumbs={[{ label: 'Privacy policy' }]} />
+  <section class="section">
+    <div class="container prose">
+      {business.demoMode && <p class="draft">Template for the demo. Each client’s policy must be reviewed for their business before going live.</p>}
+      <h2>Who we are</h2>
+      <p>{business.legalName} (ABN {business.abn}), trading as {business.tradingName}. Contact: {business.contact.email}, {business.contact.phone}.</p>
+      <h2>What we collect</h2>
+      <ul>
+        <li>Details you give us in a quote request or call: name, phone, email, suburb, a description of the job, and any photos you send.</li>
+        <li>Basic, non-identifying website usage counts (for example, how many people tapped “Call”).</li>
+      </ul>
+      <h2>Why we collect it</h2>
+      <p>To respond to your request, prepare a quote, schedule and carry out work, and keep records we’re required to keep. We don’t sell your information or use it for unrelated marketing.</p>
+      <h2>Photos</h2>
+      <p>Photos you send are used only to assess and price your job. We won’t publish them without asking you first.</p>
+      <h2>Who we share it with</h2>
+      <p>Only people who need it to do your job (for example, a subcontractor or certifier) and service providers who host our systems. Some providers may store data outside Australia; we choose providers with appropriate protections.</p>
+      <h2>Storage and security</h2>
+      <p>We keep your information in access-controlled systems and delete or de-identify it when we no longer need it.</p>
+      <h2>Access, correction and complaints</h2>
+      <p>You can ask to see or correct the information we hold about you, or make a privacy complaint, by emailing {business.contact.email}. If you’re not satisfied with our response, you can contact the Office of the Australian Information Commissioner (OAIC).</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .draft { padding: var(--space-sm) var(--space-md); background: var(--color-warning-soft); border: 1px solid var(--color-warning-line); border-radius: var(--radius-sm); font-size: var(--text-body-sm); }
+</style>

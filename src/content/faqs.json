@@ -1,0 +1,32 @@
+[
+  {
+    "id": "licensed",
+    "q": "Are you licensed and insured?",
+    "a": "Yes. Our NSW contractor licence numbers and ABN are at the bottom of every page, and we carry $20M public liability. We can send certificates with your quote."
+  },
+  {
+    "id": "quote",
+    "q": "Is the quote free?",
+    "a": "Yes for written quotes on renovations, joinery and builds. Repairs have a call-out fee that covers the first 30 minutes of work on the day."
+  },
+  {
+    "id": "photos",
+    "q": "Why do you ask for photos?",
+    "a": "Photos let us give you a price range before we visit, and bring the right materials the first time."
+  },
+  {
+    "id": "deposit",
+    "q": "How much deposit do you take?",
+    "a": "For residential building work over $20,000, NSW law caps the deposit at 10%. We only take it once the contract and insurance are in place."
+  },
+  {
+    "id": "warranty",
+    "q": "What warranty do I get?",
+    "a": "NSW statutory warranties apply: 6 years for major defects and 2 years for other defects on residential building work. If something we built isn't right, call us and we'll come back and look at it."
+  },
+  {
+    "id": "areas",
+    "q": "Do you work outside these areas?",
+    "a": "Sometimes, for larger jobs. Use the suburb checker or call us and we'll tell you straight."
+  }
+]

@@ -1,0 +1,29 @@
+---
+/**
+ * After-hours emergency banner. Server-rendered from the config default;
+ * scripts/live-settings.ts shows/hides it from the owner's console setting.
+ */
+import { business } from '@/config/business';
+import { telHref } from '@/lib/format';
+import Icon from '../ui/Icon.astro';
+---
+
+<div class="emergency" data-live="emergency" hidden={!business.defaults.emergencyEnabled}>
+  <div class="container emergency__inner">
+    <Icon name="alert" size={18} />
+    <p>
+      <strong>{business.emergency.headline}</strong><span class="emergency__extra"> — {business.emergency.examples}</span>
+    </p>
+    <a href={telHref(business.contact.afterHoursPhone)} class="emergency__call">Call {business.contact.afterHoursPhone}</a>
+  </div>
+</div>
+
+<style>
+  .emergency { background: var(--color-danger); color: #fff; }
+  .emergency__inner { display: flex; align-items: center; gap: var(--space-xs); min-height: 2.5rem; font-size: var(--text-body-sm); }
+  .emergency p { flex: 1; }
+  .emergency__extra { display: none; }
+  .emergency__call { color: #fff; font-weight: 700; white-space: nowrap; }
+  .emergency__call:hover { color: #fff; }
+  @media (min-width: 640px) { .emergency__extra { display: inline; } }
+</style>

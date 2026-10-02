@@ -1,0 +1,33 @@
+---
+/** Hairline status tag from the design system. */
+interface Props {
+  tone?: 'neutral' | 'accent' | 'success' | 'warning' | 'danger' | 'ink';
+  class?: string;
+}
+const { tone = 'neutral', class: className } = Astro.props;
+---
+
+<span class:list={['badge', `badge--${tone}`, className]}><slot /></span>
+
+<style>
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding: 0.25rem 0.625rem;
+    border: 1px solid;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-label-sm);
+    font-weight: 700;
+    letter-spacing: var(--tracking-label-sm);
+    line-height: 1.3;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .badge--neutral { background: var(--color-inset); color: var(--color-text-muted); border-color: var(--color-line); }
+  .badge--accent { background: var(--color-accent-soft); color: var(--color-accent-text); border-color: var(--color-accent-line); }
+  .badge--success { background: var(--color-success-soft); color: var(--color-success); border-color: var(--color-success-line); }
+  .badge--warning { background: var(--color-warning-soft); color: var(--color-warning); border-color: var(--color-warning-line); }
+  .badge--danger { background: var(--color-danger-soft); color: var(--color-danger); border-color: var(--color-danger-line); }
+  .badge--ink { background: var(--color-ink); color: var(--color-on-dark); border-color: var(--color-ink); }
+</style>

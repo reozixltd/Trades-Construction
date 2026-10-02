@@ -1,0 +1,47 @@
+---
+/** Eyebrow + heading + optional lead, with an optional slot for an aside (e.g. a link) on wide screens. */
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lead?: string;
+  id?: string;
+  align?: 'start' | 'center';
+  level?: 'h1' | 'h2';
+}
+const { eyebrow, title, lead, id, align = 'start', level = 'h2' } = Astro.props;
+const Heading = level;
+---
+
+<header class:list={['heading', `heading--${align}`]}>
+  <div class="heading__text">
+    {eyebrow && <p class="heading__eyebrow">{eyebrow}</p>}
+    <Heading id={id}>{title}</Heading>
+    {lead && <p class="heading__lead">{lead}</p>}
+  </div>
+  {Astro.slots.has('default') && <div class="heading__aside"><slot /></div>}
+</header>
+
+<style>
+  .heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-md) var(--space-xl);
+    margin-bottom: var(--space-xl);
+  }
+  .heading--center { justify-content: center; text-align: center; }
+  .heading--center .heading__lead { margin-inline: auto; }
+  .heading__text { max-width: 44rem; }
+  .heading__eyebrow {
+    margin-bottom: var(--space-xs);
+    color: var(--color-accent-text);
+    font-size: var(--text-label);
+    font-weight: 700;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+  :global(.section--ink) .heading__eyebrow { color: var(--color-accent-line); }
+  .heading__lead { margin-top: var(--space-sm); max-width: 38rem; color: var(--color-text-muted); font-size: var(--text-body-lg); line-height: 1.55; }
+  :global(.section--ink) .heading__lead { color: var(--color-on-dark-muted); }
+</style>

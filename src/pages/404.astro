@@ -1,0 +1,23 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Button from '@/components/ui/Button.astro';
+---
+
+<BaseLayout title="Page not found" description="This page doesn’t exist." noindex>
+  <section class="section">
+    <div class="container stack">
+      <p class="label muted">404</p>
+      <h1>We couldn’t find that page</h1>
+      <p class="muted">It may have moved. Try one of these instead.</p>
+      <div class="actions">
+        <Button href="/">Home</Button>
+        <Button href="/services/" variant="outline">Services</Button>
+        <Button href="/quote/" variant="accent">Get a quote</Button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
+</style>

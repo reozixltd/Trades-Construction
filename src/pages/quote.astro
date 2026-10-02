@@ -1,0 +1,42 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/sections/PageHeader.astro';
+import QuoteForm from '@/components/sections/QuoteForm.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { business } from '@/config/business';
+import { telHref } from '@/lib/format';
+---
+
+<BaseLayout title="Get a quote" description={`Send three quick details and photos for a fast quote. ${business.defaults.callbackPromise}`}>
+  <PageHeader
+    title="Get a quote"
+    lead="Three details are enough. Add photos and we can often give you a price range without a visit."
+    crumbs={[{ label: 'Get a quote' }]}
+  />
+  <section class="section section--tight">
+    <div class="container quote-page">
+      <QuoteForm expanded source="quote-page" />
+      <aside class="side">
+        <div data-live="emergency">
+          <p class="side__title">Urgent job?</p>
+          <p>For {business.emergency.examples} or anything unsafe, call now rather than filling in the form.</p>
+          <a class="side__call" href={telHref(business.contact.afterHoursPhone)}><Icon name="phone" size={18} />{business.contact.afterHoursPhone}</a>
+          <hr />
+        </div>
+        <p class="side__title">Licensed & insured</p>
+        <p class="side__small">{business.legalName}, trading as {business.tradingName} · {business.licences.map((l) => `Lic. ${l.number}`).join(' · ')} · ABN {business.abn}</p>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .quote-page { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xl); align-items: start; }
+  .side { padding: var(--space-lg); background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md); font-size: var(--text-body-sm); }
+  .side__title { font-weight: 700; font-size: var(--text-body); }
+  .side p + p { margin-top: var(--space-2xs); }
+  .side__call { display: inline-flex; align-items: center; gap: var(--space-xs); margin-top: var(--space-sm); color: var(--color-danger); font-size: var(--text-body-lg); font-weight: 700; text-decoration: none; }
+  .side hr { margin: var(--space-lg) 0; border: 0; border-top: 1px solid var(--color-line); }
+  .side__small { color: var(--color-text-muted); }
+  @media (min-width: 960px) { .quote-page { grid-template-columns: minmax(0, 1fr) 20rem; } .side { position: sticky; top: calc(var(--header-height) + var(--space-lg)); } }
+</style>

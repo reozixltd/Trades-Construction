@@ -1,0 +1,96 @@
+---
+import { business } from '@/config/business';
+import { primaryNav } from '@/config/navigation';
+import { telHref } from '@/lib/format';
+import Logo from './Logo.astro';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) => path.startsWith(href);
+---
+
+<header class="header">
+  <div class="container header__inner">
+    <Logo />
+
+    <nav class="header__nav" aria-label="Main">
+      <ul role="list">
+        {primaryNav.map((l) => (
+          <li><a href={l.href} aria-current={isActive(l.href) ? 'page' : undefined}>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="header__actions">
+      <a class="header__phone" href={telHref(business.contact.phone)}>
+        <Icon name="phone" size={18} />
+        <span class="header__phone-text">{business.contact.phone}</span>
+        <span class="visually-hidden">Call us</span>
+      </a>
+      <Button href="/quote/" variant="accent" class="header__cta">Get a quote</Button>
+      <button class="header__toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle>
+        <Icon name="menu" size={22} label="Open menu" />
+      </button>
+    </div>
+  </div>
+
+  <nav id="mobile-menu" class="mobile-menu" aria-label="Main" hidden data-menu>
+    <ul role="list" class="container">
+      {primaryNav.map((l) => (
+        <li><a href={l.href} aria-current={isActive(l.href) ? 'page' : undefined}>{l.label}<Icon name="arrowRight" size={18} /></a></li>
+      ))}
+      <li><a href="/quote/">Get a quote<Icon name="arrowRight" size={18} /></a></li>
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgb(255 255 255 / 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-line);
+  }
+  .header__inner { display: flex; align-items: center; gap: var(--space-md); height: var(--header-height); }
+  .header__nav { display: none; margin-left: auto; }
+  .header__nav ul { display: flex; gap: var(--space-lg); }
+  .header__nav a { color: var(--color-text-muted); font-size: 0.875rem; font-weight: 600; text-decoration: none; padding-block: var(--space-xs); }
+  .header__nav a:hover, .header__nav a[aria-current] { color: var(--color-ink); }
+  .header__nav a[aria-current] { text-decoration: underline; text-decoration-color: var(--color-accent); text-decoration-thickness: 2px; text-underline-offset: 8px; }
+
+  .header__actions { display: flex; align-items: center; gap: var(--space-xs); margin-left: auto; }
+  .header__phone {
+    display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2xs);
+    min-width: var(--control-height); min-height: var(--control-height);
+    color: var(--color-ink); font-weight: 700; font-size: 0.875rem; text-decoration: none;
+    border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm);
+  }
+  .header__phone-text { display: none; }
+  :global(.header__cta) { display: none !important; }
+  .header__toggle {
+    display: inline-grid; place-items: center;
+    width: var(--control-height); height: var(--control-height);
+    background: none; border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm);
+  }
+
+  .mobile-menu { border-top: 1px solid var(--color-line); background: var(--color-surface); }
+  .mobile-menu a {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: var(--space-md) 0; border-bottom: 1px solid var(--color-line);
+    font-family: var(--font-display); font-size: 1.125rem; font-weight: 600; text-decoration: none;
+  }
+
+  @media (min-width: 640px) {
+    .header__phone { padding-inline: var(--space-sm); border: 0; }
+    .header__phone-text { display: inline; }
+  }
+  @media (min-width: 1024px) {
+    .header__nav { display: block; }
+    .header__actions { margin-left: var(--space-lg); }
+    :global(.header__cta) { display: inline-flex !important; }
+    .header__toggle, .mobile-menu { display: none !important; }
+  }
+</style>

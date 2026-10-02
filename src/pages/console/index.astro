@@ -1,0 +1,195 @@
+---
+import { jsonLd } from '@/lib/schema';
+/**
+ * Owner console (demo). Static shell; behaviour in src/scripts/console/*.
+ * Demo sign-in only — production replaces it with the platform's real auth.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Logo from '@/components/layout/Logo.astro';
+import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { business } from '@/config/business';
+import { LEAD_STATUSES, STATUS_LABELS } from '@/lib/leads/types';
+import { getCollection } from 'astro:content';
+import { DEMO_CREDENTIALS } from '@/scripts/console/demo-auth';
+
+const serviceTitles = Object.fromEntries((await getCollection('services')).map((s) => [s.id, s.data.title]));
+---
+
+<BaseLayout title="Owner console" description="Manage leads and site settings." bare>
+  <!-- Sign in -->
+  <section class="signin" data-view="signin">
+    <form class="signin__card" data-signin>
+      <Logo />
+      <h1 class="signin__title">Owner console</h1>
+      <p class="signin__demo"><strong>Demo access.</strong> Use the details below. The live product uses secure accounts with owner and staff roles.</p>
+      <label class="f">Email<input name="email" type="email" value={DEMO_CREDENTIALS.email} autocomplete="username" required /></label>
+      <label class="f">Password<input name="password" type="password" value={DEMO_CREDENTIALS.password} autocomplete="current-password" required /></label>
+      <p class="signin__error" role="alert" data-signin-error></p>
+      <Button type="submit" variant="primary" block>Sign in</Button>
+      <a class="signin__back" href="/">← Back to website</a>
+    </form>
+  </section>
+
+  <!-- App -->
+  <div class="app" data-view="app" hidden>
+    <header class="topbar">
+      <Logo />
+      <nav class="tabs" aria-label="Console" role="tablist">
+        <button type="button" role="tab" aria-selected="true" aria-controls="panel-leads" id="tab-leads" data-tab="leads">
+          <Icon name="inbox" size={18} />Leads <span class="tabs__count" data-new-count hidden></span>
+        </button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="panel-settings" id="tab-settings" data-tab="settings" tabindex="-1">
+          <Icon name="settings" size={18} />Settings
+        </button>
+      </nav>
+      <div class="topbar__right">
+        <a href="/" class="topbar__link">View site</a>
+        <button type="button" class="icon-btn" data-signout><Icon name="logout" size={18} label="Sign out" /></button>
+      </div>
+    </header>
+
+    <main class="app__main">
+      <!-- Leads -->
+      <section id="panel-leads" role="tabpanel" aria-labelledby="tab-leads" data-panel="leads">
+        <div class="kpis" data-kpis>
+          <div class="kpi"><span class="kpi__v" data-kpi="new">0</span><span class="kpi__l">New leads</span></div>
+          <div class="kpi"><span class="kpi__v" data-kpi="open">0</span><span class="kpi__l">In progress</span></div>
+          <div class="kpi"><span class="kpi__v" data-kpi="won">0</span><span class="kpi__l">Won</span></div>
+          <div class="kpi"><span class="kpi__v" data-kpi="calls">0</span><span class="kpi__l">Call taps</span></div>
+          <div class="kpi"><span class="kpi__v" data-kpi="forms">0</span><span class="kpi__l">Form requests</span></div>
+        </div>
+
+        <div class="toolbar">
+          <div class="filters" role="group" aria-label="Filter by status" data-status-filter>
+            <button type="button" aria-pressed="true" data-status="all">All</button>
+            {LEAD_STATUSES.map((s) => <button type="button" aria-pressed="false" data-status={s}>{STATUS_LABELS[s]}</button>)}
+          </div>
+          <Button variant="outline" icon="download" data-export>Export CSV</Button>
+        </div>
+
+        <div class="leads">
+          <ul role="list" class="leads__list" data-lead-list aria-label="Leads"></ul>
+          <div class="empty" data-empty hidden>
+            <Icon name="inbox" size={28} />
+            <p><strong>No leads yet.</strong> Submit the quote form on the website, or load sample leads in Settings.</p>
+          </div>
+          <article class="detail" data-detail hidden aria-live="polite" tabindex="-1"></article>
+        </div>
+      </section>
+
+      <!-- Settings -->
+      <section id="panel-settings" role="tabpanel" aria-labelledby="tab-settings" data-panel="settings" hidden>
+        <form class="card settings" data-settings>
+          <h2>Website settings</h2>
+          <p class="muted">Changes show on the website straight away.</p>
+
+          <label class="toggle">
+            <input type="checkbox" name="emergencyEnabled" />
+            <span class="toggle__ui" aria-hidden="true"></span>
+            <span><strong>Emergency mode</strong><br /><span class="muted">Shows the 24/7 banner, after-hours number ({business.contact.afterHoursPhone}) and the “Emergency” option on the form.</span></span>
+          </label>
+
+          <label class="f">Callback promise
+            <input name="callbackPromise" type="text" maxlength="90" />
+            <span class="muted f__hint">Shown next to every quote button. Keep it to a promise you can meet.</span>
+          </label>
+
+          <div class="settings__actions">
+            <Button type="submit" variant="primary">Save settings</Button>
+            <span class="saved" role="status" data-saved></span>
+          </div>
+        </form>
+
+        <div class="card">
+          <h2>Demo data</h2>
+          <p class="muted">For walking prospects through the console.</p>
+          <div class="settings__actions">
+            <Button variant="outline" data-seed>Load sample leads</Button>
+            <Button variant="ghost" data-clear>Clear all demo data</Button>
+          </div>
+        </div>
+
+        <div class="card card--planned">
+          <h2>Edit services, areas and projects <span class="planned">Planned</span></h2>
+          <p class="muted">Content editing from the console (services, prices, suburbs, project photos, featured reviews) is planned for the next phase. The site’s content is already structured for it. Uploads will carry the reminder to use real, unedited photos of your own work.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script id="service-titles" type="application/json" set:html={jsonLd(serviceTitles)} />
+  <script>import '@/scripts/console/app';</script>
+</BaseLayout>
+
+<style>
+  :global(body.is-bare) { background: var(--color-canvas); }
+  .signin { display: grid; place-items: center; min-height: 100vh; padding: var(--space-lg) var(--page-margin); }
+  .signin__card { display: grid; gap: var(--space-md); width: 100%; max-width: 24rem; padding: var(--space-xl); background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md); box-shadow: var(--shadow-2); }
+  .signin__title { font-size: var(--text-headline-md); }
+  .signin__demo { padding: var(--space-sm); background: var(--color-warning-soft); border: 1px solid var(--color-warning-line); border-radius: var(--radius-sm); font-size: var(--text-body-sm); }
+  .signin__error { color: var(--color-danger); font-size: var(--text-body-sm); }
+  .signin__error:empty { display: none; }
+  .signin__back { font-size: var(--text-body-sm); text-align: center; }
+
+  .f { display: grid; gap: var(--space-2xs); font-size: var(--text-label); font-weight: 600; color: var(--color-text-muted); }
+  .f input, .f select, .f textarea { min-height: var(--control-height); padding: var(--space-xs) var(--space-sm); border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm); background: var(--color-surface); color: var(--color-ink); font-size: 1rem; font-weight: 400; }
+  .f input:focus, .f select:focus, .f textarea:focus { outline: none; border-color: var(--color-ink); box-shadow: 0 0 0 1px var(--color-ink); }
+  .f__hint { font-size: var(--text-body-sm); font-weight: 400; }
+
+  .topbar { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm) var(--space-lg); padding: var(--space-sm) var(--page-margin); background: var(--color-surface); border-bottom: 1px solid var(--color-line); }
+  .topbar :global(.logo__tag) { display: none; }
+  .tabs { order: 3; display: flex; gap: var(--space-2xs); width: 100%; }
+  .tabs button { display: inline-flex; align-items: center; gap: var(--space-xs); min-height: var(--control-height); padding: 0 var(--space-md); background: none; border: 0; border-bottom: 2px solid transparent; font-weight: 600; color: var(--color-text-muted); }
+  .tabs button[aria-selected='true'] { color: var(--color-ink); border-bottom-color: var(--color-accent); }
+  .tabs__count { padding: 0 0.4rem; background: var(--color-accent); color: var(--color-on-accent); border-radius: var(--radius-full); font-size: var(--text-label-sm); line-height: 1.5; }
+  .topbar__right { display: flex; align-items: center; gap: var(--space-xs); margin-left: auto; }
+  .topbar__link { font-size: var(--text-body-sm); font-weight: 600; }
+  .icon-btn { display: grid; place-items: center; width: var(--control-height); height: var(--control-height); background: none; border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm); }
+
+  .app__main { max-width: 80rem; margin: 0 auto; padding: var(--space-lg) var(--page-margin) var(--space-2xl); }
+
+  .kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-sm); }
+  .kpi { display: flex; flex-direction: column; padding: var(--space-md); background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md); }
+  .kpi__v { font-family: var(--font-display); font-size: var(--text-headline-lg); font-weight: var(--display-weight); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .kpi__l { color: var(--color-text-muted); font-size: var(--text-label-sm); font-weight: 700; letter-spacing: var(--tracking-label-sm); text-transform: uppercase; }
+
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-sm); margin-block: var(--space-lg) var(--space-md); }
+  .filters { display: flex; gap: var(--space-2xs); overflow-x: auto; max-width: 100%; padding-bottom: 2px; }
+  .filters button { flex-shrink: 0; min-height: var(--control-height); padding: 0 var(--space-sm); background: var(--color-surface); border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm); font-size: var(--text-body-sm); font-weight: 600; }
+  .filters button[aria-pressed='true'] { background: var(--color-ink); border-color: var(--color-ink); color: var(--color-on-dark); }
+
+  .leads { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-md); align-items: start; }
+  .leads__list { background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md); overflow: hidden; }
+  .leads__list:empty { display: none; }
+  .empty { display: grid; justify-items: center; gap: var(--space-sm); padding: var(--space-2xl) var(--space-lg); text-align: center; color: var(--color-text-muted); background: var(--color-surface); border: 1px dashed var(--color-line-strong); border-radius: var(--radius-md); }
+  .detail { padding: var(--space-lg); background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md); }
+  .detail:focus { outline: none; }
+
+  .card { margin-bottom: var(--space-md); padding: var(--space-lg); background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md); max-width: 44rem; }
+  .card h2 { font-size: var(--text-headline-sm); }
+  .card > * + * { margin-top: var(--space-sm); }
+  .settings { display: grid; gap: var(--space-md); }
+  .settings > * + * { margin-top: 0; }
+  .settings__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm); }
+  .saved { color: var(--color-success); font-weight: 600; font-size: var(--text-body-sm); }
+  .card--planned { border-style: dashed; }
+  .planned { display: inline-block; margin-left: var(--space-xs); padding: 0.1rem 0.5rem; background: var(--color-inset); border: 1px solid var(--color-line); border-radius: var(--radius-sm); font-family: var(--font-body); font-size: var(--text-label-sm); letter-spacing: var(--tracking-label-sm); text-transform: uppercase; vertical-align: middle; }
+
+  .toggle { position: relative; display: flex; gap: var(--space-md); align-items: flex-start; cursor: pointer; }
+  .toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .toggle__ui { flex-shrink: 0; position: relative; width: 2.75rem; height: 1.5rem; margin-top: 2px; background: var(--color-line-strong); border-radius: var(--radius-full); transition: background var(--duration); }
+  .toggle__ui::after { content: ''; position: absolute; top: 3px; left: 3px; width: 1.125rem; height: 1.125rem; background: var(--color-surface); border-radius: 50%; transition: transform var(--duration); box-shadow: var(--shadow-1); }
+  .toggle input:checked + .toggle__ui { background: var(--color-danger); }
+  .toggle input:checked + .toggle__ui::after { transform: translateX(1.25rem); }
+  .toggle input:focus-visible + .toggle__ui { box-shadow: var(--focus-ring); }
+
+  @media (min-width: 768px) {
+    .tabs { order: 0; width: auto; }
+    .kpis { grid-template-columns: repeat(5, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .leads { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); }
+    .detail { position: sticky; top: 5.5rem; }
+  }
+</style>

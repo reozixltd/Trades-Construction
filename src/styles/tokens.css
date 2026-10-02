@@ -1,0 +1,140 @@
+/*
+ * Design tokens — the only place raw colour, type, space, radius and
+ * shadow values live. Components use var(--…) only.
+ *
+ * Two themes come from the Stitch design systems:
+ *   craft     → architectural_craft/DESIGN.md (default)
+ *   precision → architectural_precision/DESIGN.md
+ * Pick one with `theme` in src/config/business.ts.
+ */
+
+:root,
+[data-theme='craft'] {
+  /* Colour — structure */
+  --color-ink: #0f172a;          /* Deep Structural Slate */
+  --color-ink-hover: #1e293b;
+  --color-text: #0f172a;
+  --color-text-muted: #475569;   /* AA on canvas and surface */
+  --color-text-subtle: #64748b;  /* Mortar Slate — metadata only, ≥14px */
+  --color-canvas: #f8f9fa;       /* limestone ground */
+  --color-surface: #ffffff;
+  --color-inset: #f1f5f9;
+  --color-line: #e2e8f0;
+  --color-line-strong: #cbd5e1;
+
+  /* Colour — accent */
+  --color-accent: #c2410c;       /* Fired Terracotta */
+  --color-accent-hover: #9a3412;
+  --color-accent-soft: #fff7ed;
+  --color-accent-line: #fed7aa;
+  --color-accent-text: #c2410c;  /* accent used as text: 5.2:1 on white */
+  --color-on-accent: #ffffff;
+  --color-warm: #d97706;         /* Tooling Amber */
+
+  /* Colour — semantic */
+  --color-success: #047857;
+  --color-success-soft: #ecfdf5;
+  --color-success-line: #a7f3d0;
+  --color-warning: #b45309;
+  --color-warning-soft: #fef3c7;
+  --color-warning-line: #fde68a;
+  --color-warning-ink: #78350f;
+  --color-danger: #b91c1c;       /* Red Iron — emergency */
+  --color-danger-soft: #fef2f2;
+  --color-danger-line: #fecaca;
+  --color-star: #fbbf24;
+  --color-star-ink: #b45309; /* stars on light backgrounds (AA) */
+  --color-overlay-chip: rgb(15 23 42 / 0.72);
+  --color-on-dark: #ffffff;
+  --color-on-dark-muted: #cbd5e1;
+
+  /* Type */
+  --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --display-weight: 700;
+  --display-case: none;
+
+  --text-display: clamp(2.25rem, 1.35rem + 3.8vw, 3.5rem);   /* 36 → 56 */
+  --leading-display: 1.12;
+  --tracking-display: -0.03em;
+  --text-headline-lg: clamp(1.625rem, 1.3rem + 1.4vw, 2rem);  /* 26 → 32 */
+  --text-headline-md: 1.5rem;
+  --text-headline-sm: 1.25rem;
+  --text-title: 1rem;
+  --text-body-lg: 1.125rem;
+  --text-body: 0.9375rem;   /* 15px */
+  --text-body-sm: 0.8125rem;
+  --text-label: 0.75rem;
+  --text-label-sm: 0.6875rem;
+  --tracking-label: 0.04em;
+  --tracking-label-sm: 0.06em;
+
+  /* Space — 8pt rhythm */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+  --gutter: 1rem;
+  --page-margin: 1rem;
+  --max-width: 80rem;
+
+  /* Shape */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-full: 9999px;
+
+  /* Elevation */
+  --shadow-1: 0 1px 3px rgb(15 23 42 / 0.04), 0 1px 2px rgb(15 23 42 / 0.02);
+  --shadow-2: 0 8px 24px -4px rgb(15 23 42 / 0.08), 0 4px 8px -2px rgb(15 23 42 / 0.04);
+  --overlay: rgb(15 23 42 / 0.45);
+
+  /* Controls */
+  --control-height: 2.75rem;  /* 44px field-ready tap targets */
+  --focus-ring: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-ink);
+  --header-height: 4.5rem;
+  --duration: 160ms;
+}
+
+[data-theme='precision'] {
+  --color-canvas: #f8fafc;
+  --color-text-muted: #334155;
+  --color-accent: #ea580c;      /* Safety Amber — buttons use dark text below for AA */
+  --color-accent-hover: #f97316;  /* lighter on hover so slate text keeps AA */
+  --color-accent-soft: #fff7ed;
+  --color-accent-line: #ffedd5;
+  --color-accent-text: #c2410c;
+  --color-on-accent: #0f172a;    /* slate on amber passes AA; white does not */
+  --color-success: #15803d;
+
+  --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --display-weight: 600;
+  --tracking-display: -0.01em;
+  --leading-display: 1.05;
+  --text-display: clamp(2.5rem, 1.6rem + 3.8vw, 3.75rem);
+  --tracking-label: 0.06em;
+  --tracking-label-sm: 0.08em;
+  --shadow-1: none;
+  --shadow-2: 0 12px 32px -4px rgb(15 23 42 / 0.06), 0 4px 12px -2px rgb(15 23 42 / 0.03);
+  --focus-ring: 0 0 0 2px var(--color-surface), 0 0 0 4px #ea580c;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: 1.25rem;
+    --page-margin: 2rem;
+    --header-height: 5rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  :root {
+    --gutter: 1.5rem;
+    --page-margin: 2.5rem;
+  }
+}

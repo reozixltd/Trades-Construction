@@ -1,0 +1,35 @@
+---
+import { business } from '@/config/business';
+import { telHref } from '@/lib/format';
+import Button from '../ui/Button.astro';
+
+interface Props {
+  title?: string;
+  text?: string;
+}
+const {
+  title = 'Tell us about the job',
+  text = 'Three quick details and a photo or two. We’ll come back with a price range or a time to visit.',
+} = Astro.props;
+---
+
+<section class="cta">
+  <div class="container cta__inner">
+    <div>
+      <h2>{title}</h2>
+      <p>{text} <span data-live="callback">{business.defaults.callbackPromise}</span></p>
+    </div>
+    <div class="cta__actions">
+      <Button href="/quote/" variant="accent" size="lg" iconEnd="arrowRight">Get a quote</Button>
+      <Button href={telHref(business.contact.phone)} variant="on-dark" size="lg" icon="phone">{business.contact.phone}</Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta { padding-block: var(--space-2xl); background: var(--color-ink); color: var(--color-on-dark); border-bottom: 1px solid rgb(255 255 255 / 0.1); }
+  .cta__inner { display: grid; gap: var(--space-lg); align-items: center; }
+  .cta p { margin-top: var(--space-xs); max-width: 40rem; color: var(--color-on-dark-muted); }
+  .cta__actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
+  @media (min-width: 900px) { .cta__inner { grid-template-columns: 1fr auto; } }
+</style>

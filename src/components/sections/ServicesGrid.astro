@@ -1,0 +1,24 @@
+---
+import { getCollection } from 'astro:content';
+import SectionHeading from '../ui/SectionHeading.astro';
+import ServiceCard from './ServiceCard.astro';
+
+interface Props {
+  title?: string;
+  lead?: string;
+}
+const {
+  title = 'Four trades, one team',
+  lead = 'From a sticking door to a second storey. Every job gets a written price before we start.',
+} = Astro.props;
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<section class="section" aria-labelledby="services-title">
+  <div class="container">
+    <SectionHeading eyebrow="What we do" title={title} lead={lead} id="services-title" />
+    <div class="grid" style="--grid-min: 15.5rem">
+      {services.map((s, i) => <ServiceCard service={s} index={i} />)}
+    </div>
+  </div>
+</section>

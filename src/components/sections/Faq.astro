@@ -1,0 +1,50 @@
+---
+import { jsonLd } from '@/lib/schema';
+/** Accessible FAQ using native <details>. Pass items, or omit to use the site-wide FAQ collection. */
+import { getCollection } from 'astro:content';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+interface Props {
+  items?: { q: string; a: string }[];
+  title?: string;
+  surface?: boolean;
+}
+const { items, title = 'Common questions', surface = false } = Astro.props;
+const faqs = items ?? (await getCollection('faqs')).map((f) => f.data);
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+---
+
+<section class:list={['section', { 'section--surface': surface }]} aria-labelledby="faq-title">
+  <div class="container faq">
+    <SectionHeading eyebrow="FAQ" title={title} id="faq-title" />
+    <div class="faq__list">
+      {faqs.map((f) => (
+        <details>
+          <summary>{f.q}</summary>
+          <p>{f.a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+  <script type="application/ld+json" set:html={jsonLd(schema)} />
+</section>
+
+<style>
+  .faq { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: var(--space-lg); }
+  .faq__list { border-top: 1px solid var(--color-line); }
+  details { border-bottom: 1px solid var(--color-line); }
+  summary {
+    display: flex; justify-content: space-between; align-items: center; gap: var(--space-md);
+    min-height: var(--control-height); padding-block: var(--space-md);
+    font-weight: 700; cursor: pointer; list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: '+'; flex-shrink: 0; display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm); font-weight: 500; transition: transform var(--duration); }
+  details[open] summary::after { content: '–'; }
+  details p { padding-bottom: var(--space-md); max-width: 62ch; color: var(--color-text-muted); }
+  @media (min-width: 960px) { .faq { grid-template-columns: 1fr 2fr; gap: var(--space-2xl); } }
+</style>

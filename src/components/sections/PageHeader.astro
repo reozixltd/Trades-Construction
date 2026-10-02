@@ -1,0 +1,48 @@
+---
+import { jsonLd } from '@/lib/schema';
+/** Inner-page header: breadcrumb, title, lead, optional actions slot. */
+interface Crumb {
+  label: string;
+  href?: string;
+}
+interface Props {
+  title: string;
+  lead?: string;
+  eyebrow?: string;
+  crumbs?: Crumb[];
+}
+const { title, lead, eyebrow, crumbs = [] } = Astro.props;
+const all: Crumb[] = [{ label: 'Home', href: '/' }, ...crumbs];
+const crumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: all.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.label, item: c.href ? new URL(c.href, Astro.site).href : undefined })),
+};
+---
+
+<header class="ph-head">
+  <div class="container">
+    <nav aria-label="Breadcrumb">
+      <ol role="list" class="crumbs">
+        {all.map((c) => <li>{c.href ? <a href={c.href}>{c.label}</a> : <span aria-current="page">{c.label}</span>}</li>)}
+      </ol>
+    </nav>
+    {eyebrow && <p class="ph-head__eyebrow">{eyebrow}</p>}
+    <h1>{title}</h1>
+    {lead && <p class="ph-head__lead">{lead}</p>}
+    {Astro.slots.has('default') && <div class="ph-head__actions"><slot /></div>}
+  </div>
+  <script type="application/ld+json" set:html={jsonLd(crumbSchema)} />
+</header>
+
+<style>
+  .ph-head { padding-block: var(--space-xl); background: var(--color-surface); border-bottom: 1px solid var(--color-line); }
+  .crumbs { display: flex; flex-wrap: wrap; gap: var(--space-2xs); margin-bottom: var(--space-md); font-size: var(--text-body-sm); color: var(--color-text-subtle); }
+  .crumbs li + li::before { content: '/'; margin-right: var(--space-2xs); color: var(--color-line-strong); }
+  .crumbs a { color: var(--color-text-muted); }
+  .ph-head__eyebrow { margin-bottom: var(--space-xs); color: var(--color-accent-text); font-size: var(--text-label); font-weight: 700; letter-spacing: var(--tracking-label); text-transform: uppercase; }
+  .ph-head h1 { font-size: var(--text-headline-lg); max-width: 28ch; }
+  .ph-head__lead { margin-top: var(--space-sm); max-width: 42rem; color: var(--color-text-muted); font-size: var(--text-body-lg); line-height: 1.55; }
+  .ph-head__actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-lg); }
+  @media (min-width: 768px) { .ph-head { padding-block: var(--space-2xl); } .ph-head h1 { font-size: clamp(2rem, 1.4rem + 2vw, 2.75rem); } }
+</style>

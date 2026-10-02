@@ -1,0 +1,41 @@
+---
+/** Three-step conversion funnel (UI/UX Pro Max: Funnel pattern). Numbered because the order is real. */
+import { processSteps } from '@/config/process';
+import SectionHeading from '../ui/SectionHeading.astro';
+import Icon from '../ui/Icon.astro';
+---
+
+<section class="section section--surface" aria-labelledby="how-title">
+  <div class="container">
+    <SectionHeading eyebrow="How it works" title="From first message to written quote" id="how-title" />
+    <ol role="list" class="steps">
+      {processSteps.map((s, i) => (
+        <li class="step">
+          <span class="step__n" aria-hidden="true">{i + 1}</span>
+          <h3 class="step__title"><span class="visually-hidden">Step {i + 1}: </span>{s.title}</h3>
+          <p class="step__text">{s.text}</p>
+          {s.cta && <a class="step__cta" href={s.cta.href}>{s.cta.label}<Icon name="arrowRight" size={16} /></a>}
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .steps { display: grid; gap: var(--space-lg); counter-reset: step; }
+  .step { position: relative; padding-top: var(--space-xl); }
+  .step::before { content: ''; position: absolute; left: 0; right: 0; top: 1.05rem; height: 1px; background: var(--color-line-strong); }
+  .step:last-child::before { right: auto; width: 2.25rem; }
+  .step__n {
+    position: absolute; top: 0; left: 0; display: grid; place-items: center;
+    width: 2.25rem; height: 2.25rem; border-radius: 50%;
+    background: var(--color-ink); color: var(--color-on-dark);
+    font-family: var(--font-display); font-weight: 700; font-variant-numeric: tabular-nums;
+  }
+  .step:first-child .step__n { background: var(--color-accent); color: var(--color-on-accent); }
+  .step__title { margin-top: var(--space-sm); font-size: var(--text-headline-sm); }
+  .step__text { margin-top: var(--space-xs); color: var(--color-text-muted); max-width: 34ch; }
+  .step__cta { display: inline-flex; align-items: center; gap: var(--space-2xs); min-height: var(--control-height); margin-top: var(--space-xs); font-weight: 700; text-decoration: none; color: var(--color-accent-text); }
+  @media (max-width: 767px) { .step::before { display: none; } }
+  @media (min-width: 768px) { .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-xl); } }
+</style>

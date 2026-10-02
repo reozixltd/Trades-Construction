@@ -1,0 +1,45 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/sections/PageHeader.astro';
+import AreaChecker from '@/components/sections/AreaChecker.astro';
+import CtaBand from '@/components/sections/CtaBand.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import Icon from '@/components/ui/Icon.astro';
+import Photo from '@/components/ui/Photo.astro';
+import { isPhotoSlot } from '@/lib/photos';
+import { business } from '@/config/business';
+
+const areas = (await getCollection('areas')).map((a) => ({ ...a, slot: `area-${a.id}` }));
+---
+
+<BaseLayout title="Areas we cover" description={`Suburbs we service across ${business.headline.area}, with local job examples and a quick suburb checker.`}>
+  <PageHeader title="Areas we cover" lead={`Based in ${business.baseSuburb}, working across ${business.headline.area}.`} crumbs={[{ label: 'Areas' }]} />
+  <AreaChecker compact />
+  <section class="section section--surface" aria-labelledby="main-areas">
+    <div class="container">
+      <SectionHeading eyebrow="Main areas" title="Where most of our work is" id="main-areas" />
+      <div class="grid" style="--grid-min: 15rem">
+        {areas.map((a) => (
+          <a class="area" href={`/areas/${a.id}/`}>
+            {isPhotoSlot(a.slot) && <Photo slot={a.slot} ratio="16 / 10" sizes="(min-width: 960px) 25vw, 100vw" class="area__photo" />}
+            <Icon name="mapPin" size={20} />
+            <span class="area__name">{a.data.suburb} <span>{a.data.postcode}</span></span>
+            <span class="area__meta">{a.data.region} · {a.data.travelTime}</span>
+            <span class="area__near">Also: {a.data.nearbySuburbs.slice(0, 3).join(', ')}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .area :global(.area__photo) { margin: calc(-1 * var(--space-lg)) calc(-1 * var(--space-lg)) var(--space-sm); border-radius: var(--radius-md) var(--radius-md) 0 0; }
+  .area { overflow: hidden; display: grid; gap: var(--space-2xs); padding: var(--space-lg); background: var(--color-canvas); border: 1px solid var(--color-line); border-radius: var(--radius-md); text-decoration: none; }
+  .area:hover { border-color: var(--color-ink); color: inherit; }
+  .area :global(.icon) { color: var(--color-accent-text); }
+  .area__name { font-family: var(--font-display); font-size: var(--text-headline-sm); font-weight: 700; }
+  .area__name span, .area__meta, .area__near { color: var(--color-text-muted); font-size: var(--text-body-sm); font-weight: 500; }
+</style>

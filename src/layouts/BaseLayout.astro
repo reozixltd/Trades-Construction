@@ -1,0 +1,61 @@
+---
+/** Page shell: head, theme, ribbon, emergency banner, header, main, footer, mobile call bar. */
+import '@/styles/global.css';
+import { business } from '@/config/business';
+import { SETTINGS_KEY } from '@/lib/settings';
+import Seo from '@/components/layout/Seo.astro';
+import DemoRibbon from '@/components/layout/DemoRibbon.astro';
+import EmergencyBanner from '@/components/layout/EmergencyBanner.astro';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import MobileCallBar from '@/components/layout/MobileCallBar.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  schema?: Record<string, unknown>;
+  noindex?: boolean;
+  /** Console and other app-like pages hide the marketing chrome. */
+  bare?: boolean;
+}
+
+const { title, description, schema, noindex, bare = false } = Astro.props;
+
+const fonts: Record<typeof business.theme, string> = {
+  craft: 'family=Plus+Jakarta+Sans:wght@400;500;600;700;800',
+  precision: 'family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700',
+};
+---
+
+<!doctype html>
+<html lang="en-AU" data-theme={business.theme}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?${fonts[business.theme]}&display=swap`} />
+    <!-- Applies the owner's emergency setting before first paint (no banner flash). -->
+    <script is:inline define:vars={{ settingsKey: SETTINGS_KEY }}>
+      try {
+        var s = JSON.parse(localStorage.getItem(settingsKey) || '{}');
+        if (s.emergencyEnabled === false) document.documentElement.classList.add('emergency-off');
+      } catch (e) {}
+    </script>
+    <Seo title={title} description={description} schema={schema} noindex={noindex || bare} />
+  </head>
+  <body class:list={{ 'is-bare': bare }}>
+    <a class="skip-link" href="#main">Skip to content</a>
+    {!bare && <DemoRibbon />}
+    {!bare && <EmergencyBanner />}
+    {!bare && <Header />}
+    <main id="main"><slot /></main>
+    {!bare && <Footer />}
+    {!bare && <MobileCallBar />}
+    <script>
+      import '@/scripts/site';
+    </script>
+  </body>
+</html>

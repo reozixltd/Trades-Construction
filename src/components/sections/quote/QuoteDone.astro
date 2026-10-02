@@ -1,0 +1,39 @@
+---
+/** Confirmation shown after a quote request, with the "what happens next" milestone track. */
+import { business } from '@/config/business';
+import { telHref } from '@/lib/format';
+import Icon from '../../ui/Icon.astro';
+
+const steps = ['We get your request', 'We call you back', 'Price range or site visit', 'Written quote'];
+---
+
+<div class="done" hidden data-done tabindex="-1">
+  <p class="done__badge"><Icon name="checkCircle" size={20} /> Request received</p>
+  <h3 class="done__title">Thanks, <span data-done-name></span>. We’ve got it.</h3>
+  <p class="done__text"><span data-live="callback">{business.defaults.callbackPromise}</span> Your reference is <strong data-done-ref></strong>.</p>
+  <p class="done__flag" hidden data-done-out>Your suburb is outside our usual area. We’ll still read your request and tell you straight if we can help.</p>
+  <p class="done__flag" hidden data-done-photos>Some photos couldn’t be attached from this browser. We’ll ask for them when we call.</p>
+  <ol role="list" class="track" aria-label="What happens next">
+    {steps.map((s, i) => <li class:list={{ 'is-done': i === 0 }}><span class="track__node"></span>{s}</li>)}
+  </ol>
+  <p class="done__urgent">Urgent? Call <a href={telHref(business.contact.phone)}>{business.contact.phone}</a></p>
+</div>
+
+<style>
+  .done { padding: var(--space-lg); }
+  .done:focus { outline: none; }
+  .done__badge { display: inline-flex; align-items: center; gap: var(--space-xs); color: var(--color-success); font-weight: 700; }
+  .done__title { margin-top: var(--space-sm); font-size: var(--text-headline-md); }
+  .done__text { margin-top: var(--space-xs); color: var(--color-text-muted); }
+  .done__flag { margin-top: var(--space-sm); padding: var(--space-sm) var(--space-md); background: var(--color-warning-soft); border: 1px solid var(--color-warning-line); border-radius: var(--radius-sm); font-size: var(--text-body-sm); }
+  .done__urgent { margin-top: var(--space-lg); font-weight: 600; }
+
+  /* Milestone track (design system): hairline with 8px nodes, active node in accent. */
+  .track { display: grid; gap: var(--space-md); margin-top: var(--space-lg); padding-left: var(--space-md); border-left: 1px solid var(--color-line-strong); }
+  .track li { position: relative; font-size: var(--text-body-sm); font-weight: 600; color: var(--color-text-muted); }
+  .track__node { position: absolute; left: calc(-1 * var(--space-md) - 4.5px); top: 0.45em; width: 8px; height: 8px; border-radius: 50%; background: var(--color-line-strong); }
+  .track .is-done { color: var(--color-ink); }
+  .track .is-done .track__node { background: var(--color-accent); box-shadow: 0 0 0 3px var(--color-accent-soft); }
+
+  @media (min-width: 640px) { .done { padding: var(--space-xl); } }
+</style>

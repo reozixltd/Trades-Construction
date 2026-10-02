@@ -1,0 +1,74 @@
+---
+/**
+ * Button or link styled as a button. Variants follow the design system:
+ * primary (slate), accent (terracotta — conversion actions only), outline, ghost, on-dark.
+ */
+import type { HTMLAttributes } from 'astro/types';
+import Icon from './Icon.astro';
+import type { IconName } from './icons';
+
+type Variant = 'primary' | 'accent' | 'outline' | 'ghost' | 'on-dark';
+
+interface Props extends Omit<HTMLAttributes<'a'> & HTMLAttributes<'button'>, 'type'> {
+  href?: string;
+  variant?: Variant;
+  size?: 'md' | 'lg';
+  icon?: IconName;
+  iconEnd?: IconName;
+  type?: 'button' | 'submit';
+  block?: boolean;
+}
+
+const { href, variant = 'primary', size = 'md', icon, iconEnd, type = 'button', block = false, class: className, ...rest } = Astro.props;
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag
+  href={href}
+  type={href ? undefined : type}
+  class:list={['btn', `btn--${variant}`, `btn--${size}`, { 'btn--block': block }, className]}
+  {...rest}
+>
+  {icon && <Icon name={icon} size={18} />}
+  <span><slot /></span>
+  {iconEnd && <Icon name={iconEnd} size={18} />}
+</Tag>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    min-height: var(--control-height);
+    padding: 0 var(--space-lg);
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color var(--duration), border-color var(--duration), color var(--duration);
+  }
+  .btn--lg { min-height: 3.25rem; padding: 0 var(--space-xl); font-size: 0.9375rem; }
+  .btn--block { display: flex; width: 100%; }
+
+  .btn--primary { background: var(--color-ink); color: var(--color-on-dark); }
+  .btn--primary:hover { background: var(--color-ink-hover); color: var(--color-on-dark); }
+
+  .btn--accent { background: var(--color-accent); color: var(--color-on-accent); }
+  .btn--accent:hover { background: var(--color-accent-hover); color: var(--color-on-accent); }
+
+  .btn--outline { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-line-strong); }
+  .btn--outline:hover { background: var(--color-canvas); color: var(--color-ink); border-color: var(--color-ink); }
+
+  .btn--ghost { background: transparent; color: var(--color-ink); }
+  .btn--ghost:hover { background: var(--color-inset); color: var(--color-ink); }
+
+  .btn--on-dark { background: transparent; color: var(--color-on-dark); border-color: rgb(255 255 255 / 0.35); }
+  .btn--on-dark:hover { background: rgb(255 255 255 / 0.08); color: var(--color-on-dark); border-color: var(--color-on-dark); }
+
+  .btn[disabled] { opacity: 0.55; cursor: not-allowed; }
+</style>

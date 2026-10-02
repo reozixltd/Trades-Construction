@@ -1,0 +1,91 @@
+---
+/** "Do you cover my area?" — suburb/postcode lookup against business.areas (logic in lib/areas). */
+import { business } from '@/config/business';
+import { telHref } from '@/lib/format';
+import SectionHeading from '../ui/SectionHeading.astro';
+import Button from '../ui/Button.astro';
+import ServiceAreaMap from './ServiceAreaMap.astro';
+
+interface Props {
+  compact?: boolean;
+}
+const { compact = false } = Astro.props;
+const tel = telHref(business.contact.phone);
+const areaData = JSON.stringify({ covered: business.areas.covered, nearby: business.areas.nearby });
+---
+
+<section class:list={['section', { 'section--tight': compact }]} aria-labelledby="area-title">
+  <div class="container checker">
+    <div class="checker__intro">
+      <SectionHeading
+        eyebrow="Service area"
+        title="Do you cover my area?"
+        lead={`We work across ${business.headline.area}. Type your suburb or postcode.`}
+        id="area-title"
+      />
+      <ServiceAreaMap />
+    </div>
+
+    <div class="checker__box" data-area-checker data-areas={areaData}>
+      <form class="checker__form" novalidate>
+        <label for="area-input" class="checker__label">Suburb or postcode</label>
+        <div class="checker__row">
+          <input id="area-input" name="area" type="text" inputmode="text" autocomplete="address-level2" placeholder="e.g. Castle Hill or 2154" required />
+          <Button type="submit" variant="primary">Check</Button>
+        </div>
+      </form>
+      <div class="checker__result" role="status" aria-live="polite" data-area-result></div>
+
+      <div hidden data-tpl="covered">
+        <p class="res res--yes"><strong>Yes, we cover <span data-slot="name"></span>.</strong> <a data-slot="link" hidden>See local jobs →</a></p>
+        <p class="res__next"><a href="/quote/" data-slot="quote">Request a quote for this suburb</a></p>
+      </div>
+      <div hidden data-tpl="nearby">
+        <p class="res res--maybe"><strong><span data-slot="name"></span> is just outside our usual area.</strong> We take some jobs there, mostly larger ones. Ask us.</p>
+        <p class="res__next"><a href={tel}>Call {business.contact.phone}</a> or <a href="/quote/" data-slot="quote">send the details</a></p>
+      </div>
+      <div hidden data-tpl="not-covered">
+        <p class="res res--no"><strong>That’s outside our usual area.</strong> Call us anyway: if we can’t help, we’ll suggest someone who can.</p>
+        <p class="res__next"><a href={tel}>Call {business.contact.phone}</a></p>
+      </div>
+      <div hidden data-tpl="invalid">
+        <p class="res res--no">Please enter a suburb name or a 4-digit postcode.</p>
+      </div>
+
+      <details class="checker__all">
+        <summary>All suburbs we cover ({business.areas.covered.length})</summary>
+        <ul role="list">
+          {business.areas.covered.map((a) => (
+            <li>{a.page ? <a href={`/areas/${a.page}/`}>{a.suburb}</a> : a.suburb} <span>{a.postcode}</span></li>
+          ))}
+        </ul>
+      </details>
+    </div>
+  </div>
+</section>
+
+<script>import '@/scripts/area-checker';</script>
+
+<style>
+  .checker { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-lg); }
+  .checker__box { padding: var(--space-lg); background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md); box-shadow: var(--shadow-1); }
+  .checker__label { display: block; margin-bottom: var(--space-xs); font-size: var(--text-label); font-weight: 600; color: var(--color-text-muted); }
+  .checker__row { display: flex; gap: var(--space-xs); }
+  .checker__row input {
+    flex: 1; min-width: 0; height: var(--control-height); padding: 0 var(--space-md);
+    border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm); background: var(--color-surface); font-size: 1rem;
+  }
+  .checker__row input:focus { outline: none; border-color: var(--color-ink); box-shadow: 0 0 0 1px var(--color-ink); }
+  .checker__result:not(:empty) { margin-top: var(--space-md); padding: var(--space-md); border-radius: var(--radius-sm); background: var(--color-inset); }
+  .checker__result :global(.res--yes strong) { color: var(--color-success); }
+  .checker__result :global(.res--maybe strong) { color: var(--color-warning); }
+  .checker__result :global(.res__next) { margin-top: var(--space-2xs); font-size: var(--text-body-sm); font-weight: 600; }
+  .checker__all { margin-top: var(--space-md); font-size: var(--text-body-sm); }
+  .checker__all summary { min-height: var(--control-height); display: flex; align-items: center; gap: var(--space-xs); font-weight: 600; cursor: pointer; list-style: none; }
+  .checker__all summary::-webkit-details-marker { display: none; }
+  .checker__all summary::before { content: '+'; display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm); }
+  .checker__all[open] summary::before { content: '–'; }
+  .checker__all ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: var(--space-2xs) var(--space-md); padding-top: var(--space-xs); }
+  .checker__all span { color: var(--color-text-subtle); font-variant-numeric: tabular-nums; }
+  @media (min-width: 960px) { .checker { grid-template-columns: 1fr 1.2fr; align-items: start; gap: var(--space-2xl); } }
+</style>

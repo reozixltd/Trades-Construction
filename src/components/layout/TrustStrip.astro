@@ -1,0 +1,74 @@
+---
+/**
+ * Trust strip: licensee name, licence numbers, ABN, insurance, years in trade, rating.
+ * NSW and QLD rules require the licensee name + licence number on advertising,
+ * so this reads only from business config and appears high on key pages.
+ */
+import { business } from '@/config/business';
+import Icon from '../ui/Icon.astro';
+
+const years = new Date().getFullYear() - business.yearFounded;
+const rating = business.stats.find((s) => /rating/i.test(s.label));
+---
+
+<section class="trust" aria-label="Licences and credentials">
+  <div class="container trust__inner">
+    <div class="trust__item trust__item--licence">
+      <Icon name="badge" size={20} />
+      <div>
+        <p class="trust__label">Licensed builder</p>
+        <p class="trust__value">{business.legalName}</p>
+        <p class="trust__meta">Trading as {business.tradingName}</p>
+        <p class="trust__meta">{business.licences.map((l) => `Lic. ${l.number}`).join(' · ')} · ABN {business.abn}</p>
+      </div>
+    </div>
+    <div class="trust__item">
+      <Icon name="shield" size={20} />
+      <div>
+        <p class="trust__label">Insured</p>
+        <p class="trust__value">{business.insuranceShort}</p>
+      </div>
+    </div>
+    <div class="trust__item">
+      <Icon name="clock" size={20} />
+      <div>
+        <p class="trust__label">In trade</p>
+        <p class="trust__value">{years}+ years</p>
+      </div>
+    </div>
+    {
+      rating && (
+        <a class="trust__item trust__item--link" href={business.social.googleReviewsUrl} rel="noopener">
+          <Icon name="star" size={20} />
+          <div>
+            <p class="trust__label">Google rating{business.demoMode && ' (sample)'}</p>
+            <p class="trust__value">{rating.value} / 5 · {rating.note.replace('From ', '')}</p>
+          </div>
+        </a>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .trust { background: var(--color-surface); border-block: 1px solid var(--color-line); }
+  .trust__inner { display: grid; grid-template-columns: 1fr 1fr; }
+  .trust__item {
+    display: flex; gap: var(--space-sm); align-items: flex-start;
+    padding: var(--space-md) var(--space-sm) var(--space-md) 0;
+    color: var(--color-ink); text-decoration: none;
+  }
+  .trust__item :global(.icon) { margin-top: 2px; color: var(--color-accent-text); }
+  .trust__item--licence { grid-column: 1 / -1; border-bottom: 1px solid var(--color-line); }
+  .trust__item--link:hover .trust__value { text-decoration: underline; }
+  .trust__label { color: var(--color-text-muted); font-size: var(--text-label-sm); font-weight: 700; letter-spacing: var(--tracking-label-sm); text-transform: uppercase; }
+  .trust__value { font-weight: 700; font-size: 0.9375rem; line-height: 1.35; }
+  .trust__meta { color: var(--color-text-muted); font-size: var(--text-body-sm); font-variant-numeric: tabular-nums; }
+
+  @media (min-width: 1024px) {
+    .trust__inner { grid-template-columns: 1.6fr 1fr 0.8fr 1.1fr; }
+    .trust__item { padding: var(--space-lg) var(--space-lg) var(--space-lg) 0; }
+    .trust__item + .trust__item { padding-left: var(--space-lg); border-left: 1px solid var(--color-line); }
+    .trust__item--licence { grid-column: auto; border-bottom: 0; }
+  }
+</style>

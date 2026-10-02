@@ -1,0 +1,67 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/sections/PageHeader.astro';
+import QuoteForm from '@/components/sections/QuoteForm.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { business } from '@/config/business';
+import { telHref } from '@/lib/format';
+---
+
+<BaseLayout title="Contact" description={`Call ${business.contact.phone} or send a quick request. ${business.defaults.callbackPromise}`}>
+  <PageHeader title="Contact us" lead="Call, email or send a quick request. Most jobs start with a phone call." crumbs={[{ label: 'Contact' }]} />
+  <section class="section">
+    <div class="container contact">
+      <div class="contact__info">
+        <a class="contact__card" href={telHref(business.contact.phone)}>
+          <Icon name="phone" size={22} />
+          <span><span class="contact__label">Office</span><strong>{business.contact.phone}</strong></span>
+        </a>
+        <a class="contact__card contact__card--danger" href={telHref(business.contact.afterHoursPhone)} data-live="emergency">
+          <Icon name="alert" size={22} />
+          <span><span class="contact__label">After-hours emergencies</span><strong>{business.contact.afterHoursPhone}</strong></span>
+        </a>
+        <a class="contact__card" href={`mailto:${business.contact.email}`}>
+          <Icon name="mail" size={22} />
+          <span><span class="contact__label">Email</span><strong>{business.contact.email}</strong></span>
+        </a>
+
+        <h2 class="contact__h">Opening hours</h2>
+        <table class="hours">
+          <tbody>
+            {business.hours.map((h) => <tr><th scope="row">{h.days}</th><td>{h.hours}</td></tr>)}
+            <tr><th scope="row">Sunday & public holidays</th><td>Closed</td></tr>
+          </tbody>
+        </table>
+
+        {business.contact.address && (
+          <>
+            <h2 class="contact__h">Workshop</h2>
+            <p class="contact__addr"><Icon name="mapPin" size={18} />{business.contact.address}</p>
+            <p class="muted contact__small">Visits by appointment. We come to you for quotes.</p>
+          </>
+        )}
+      </div>
+      <QuoteForm source="contact" />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xl); align-items: start; }
+  .contact__info { display: grid; gap: var(--space-sm); }
+  .contact__card { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-md) var(--space-lg); background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md); text-decoration: none; }
+  .contact__card:hover { border-color: var(--color-ink); color: inherit; }
+  .contact__card :global(.icon) { color: var(--color-accent-text); }
+  .contact__card--danger :global(.icon) { color: var(--color-danger); }
+  .contact__card > span { display: grid; }
+  .contact__label { color: var(--color-text-muted); font-size: var(--text-label-sm); font-weight: 700; letter-spacing: var(--tracking-label-sm); text-transform: uppercase; }
+  .contact__card strong { font-size: var(--text-body-lg); overflow-wrap: anywhere; }
+  .contact__h { margin-top: var(--space-lg); font-size: var(--text-headline-sm); }
+  .hours { width: 100%; border-collapse: collapse; font-size: var(--text-body-sm); }
+  .hours th, .hours td { padding: var(--space-xs) 0; border-bottom: 1px solid var(--color-line); text-align: left; }
+  .hours th { font-weight: 500; color: var(--color-text-muted); }
+  .hours td { text-align: right; font-weight: 700; }
+  .contact__addr { display: flex; gap: var(--space-xs); font-weight: 600; }
+  .contact__small { font-size: var(--text-body-sm); }
+  @media (min-width: 960px) { .contact { grid-template-columns: 0.8fr 1.2fr; gap: var(--space-2xl); } }
+</style>

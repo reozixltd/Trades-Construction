@@ -1,0 +1,55 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/sections/PageHeader.astro';
+import StatTiles from '@/components/sections/StatTiles.astro';
+import Reviews from '@/components/sections/Reviews.astro';
+import CtaBand from '@/components/sections/CtaBand.astro';
+import Photo from '@/components/ui/Photo.astro';
+import { business } from '@/config/business';
+
+const years = new Date().getFullYear() - business.yearFounded;
+---
+
+<BaseLayout title="About us" description={`${business.legalName}: licensed builders and trades in ${business.headline.area} since ${business.yearFounded}.`}>
+  <PageHeader title={`About ${business.tradingName}`} lead={`A family-run building company in ${business.baseSuburb}, in trade for ${years} years.`} crumbs={[{ label: 'About' }]} />
+  <StatTiles />
+
+  <section class="section">
+    <div class="container about">
+      <Photo slot="about-owner" ratio="4 / 5" sizes="(min-width: 960px) 30vw, 100vw" tone="timber" class="about__photo" />
+      <div class="prose">
+        <h2>Who you’ll deal with</h2>
+        <p>
+          {business.tradingName} started in {business.yearFounded} as a one-ute carpentry business. Today we’re a small team of licensed builders,
+          carpenters and a plumber, with a workshop in {business.baseSuburb}.
+        </p>
+        <p>
+          The person who quotes your job is the person who runs it. You get one phone number, a written schedule, and a weekly update on bigger jobs.
+        </p>
+
+        <h2>Licences and insurance</h2>
+        <table class="creds">
+          <tbody>
+            <tr><th scope="row">Licensee</th><td>{business.legalName} (trading as {business.tradingName})</td></tr>
+            {business.licences.map((l) => <tr><th scope="row">{l.label}</th><td>Lic. {l.number} · {l.issuer}</td></tr>)}
+            <tr><th scope="row">ABN</th><td>{business.abn}</td></tr>
+            <tr><th scope="row">Insurance</th><td>{business.insurance}</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">You can check any {business.state} licence on the {business.state} Government’s public licence check. We’ll send insurance certificates with your quote.</p>
+      </div>
+    </div>
+  </section>
+  <Reviews />
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .about { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xl); align-items: start; }
+  .about :global(.about__photo) { max-width: 26rem; }
+  .creds { width: 100%; border-collapse: collapse; font-size: var(--text-body-sm); border: 1px solid var(--color-line); background: var(--color-surface); }
+  .creds th, .creds td { padding: var(--space-sm) var(--space-md); text-align: left; vertical-align: top; border-bottom: 1px solid var(--color-inset); }
+  .creds th { width: 40%; color: var(--color-text-muted); font-weight: 600; }
+  .creds td { font-weight: 600; }
+  @media (min-width: 960px) { .about { grid-template-columns: 0.7fr 1.3fr; gap: var(--space-2xl); } }
+</style>

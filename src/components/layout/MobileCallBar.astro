@@ -1,0 +1,41 @@
+---
+/** Sticky Call / Get a quote bar on phones — the two actions a tradie site exists for. */
+import { business } from '@/config/business';
+import { telHref } from '@/lib/format';
+import Icon from '../ui/Icon.astro';
+---
+
+<div class="callbar" role="region" aria-label="Quick contact">
+  <a class="callbar__btn callbar__btn--call" href={telHref(business.contact.phone)}>
+    <Icon name="phone" size={18} /> Call now
+  </a>
+  <a class="callbar__btn callbar__btn--quote" href="/quote/">
+    <Icon name="file" size={18} /> Get a quote
+  </a>
+</div>
+
+<style>
+  .callbar {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 45;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--page-margin) calc(var(--space-xs) + env(safe-area-inset-bottom));
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-line);
+    box-shadow: 0 -6px 20px rgb(15 23 42 / 0.08);
+  }
+  .callbar__btn {
+    display: flex; align-items: center; justify-content: center; gap: var(--space-xs);
+    min-height: 3rem; border-radius: var(--radius-sm);
+    font-weight: 700; font-size: 0.9375rem; text-decoration: none;
+  }
+  .callbar__btn--call { background: var(--color-ink); color: var(--color-on-dark); }
+  .callbar__btn--quote { background: var(--color-accent); color: var(--color-on-accent); }
+  .callbar__btn:hover { color: inherit; filter: brightness(1.08); }
+  .callbar__btn--call:hover { color: var(--color-on-dark); }
+  .callbar__btn--quote:hover { color: var(--color-on-accent); }
+  @media (min-width: 1024px) { .callbar { display: none; } }
+</style>

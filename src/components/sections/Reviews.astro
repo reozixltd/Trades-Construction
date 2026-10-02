@@ -1,0 +1,59 @@
+---
+/** Featured reviews + link to the Google profile. Hides itself when there are no reviews. */
+import { getCollection } from 'astro:content';
+import { business } from '@/config/business';
+import SectionHeading from '../ui/SectionHeading.astro';
+import Icon from '../ui/Icon.astro';
+import Button from '../ui/Button.astro';
+
+const reviews = await getCollection('reviews');
+---
+
+{
+  reviews.length > 0 && (
+    <section class="section section--ink" aria-labelledby="reviews-title">
+      <div class="container">
+        <SectionHeading
+          eyebrow={business.demoMode ? 'Reviews (sample)' : 'Reviews'}
+          title="What clients say"
+          lead={business.demoMode ? 'Sample reviews for a fictional business. A live site shows the client’s real Google reviews.' : 'A selection of reviews from our Google Business Profile.'}
+          id="reviews-title"
+        >
+          <Button href={business.social.googleReviewsUrl} variant="on-dark" iconEnd="arrowUpRight" rel="noopener">
+            All reviews on Google
+          </Button>
+        </SectionHeading>
+
+        <div class="grid" style="--grid-min: 16rem">
+          {reviews.map(({ data: r }) => (
+            <figure class="review">
+              <p class="review__stars" role="img" aria-label={`${r.rating} out of 5 stars`}>
+                {Array.from({ length: 5 }, (_, i) => (
+                  <span class:list={{ off: i >= r.rating }}><Icon name="star" size={16} /></span>
+                ))}
+              </p>
+              {business.demoMode && <span class="review__sample">Sample review</span>}
+              <blockquote>“{r.text}”</blockquote>
+              <figcaption>
+                <strong>{r.name}</strong>
+                <span>{r.suburb} · {r.service}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .review { display: flex; flex-direction: column; gap: var(--space-md); padding: var(--space-lg); background: rgb(255 255 255 / 0.04); border: 1px solid rgb(255 255 255 / 0.12); border-radius: var(--radius-md); }
+  .review__stars { display: flex; gap: 2px; color: var(--color-star); }
+  .review__sample { align-self: flex-start; padding: 0.1rem 0.45rem; border: 1px solid rgb(255 255 255 / 0.25); border-radius: var(--radius-sm); color: var(--color-on-dark-muted); font-size: var(--text-label-sm); font-weight: 700; letter-spacing: var(--tracking-label-sm); text-transform: uppercase; }
+  .review__stars :global(svg) { fill: currentColor; }
+  .review__stars .off { color: rgb(255 255 255 / 0.25); }
+  blockquote { margin: 0; color: var(--color-on-dark); font-size: var(--text-body); line-height: 1.6; flex: 1; }
+  figcaption { display: flex; flex-direction: column; font-size: var(--text-body-sm); }
+  figcaption strong { color: var(--color-on-dark); }
+  figcaption span { color: var(--color-on-dark-muted); }
+</style>

@@ -1,0 +1,30 @@
+---
+/** Spec-sheet metric tiles (design system). Values come from config; labelled sample in demo mode. */
+import { business } from '@/config/business';
+---
+
+<section class="stats" aria-label="At a glance">
+  <div class="container">
+    <dl class="stats__grid">
+      {business.stats.map((s) => (
+        <div class="stats__tile">
+          <dt class="stats__label">{s.label}</dt>
+          <dd class="stats__value">{s.value}</dd>
+          <dd class="stats__note">{s.note}</dd>
+        </div>
+      ))}
+    </dl>
+    {business.demoMode && <p class="stats__sample">Sample figures for the demo business.</p>}
+  </div>
+</section>
+
+<style>
+  .stats { padding-block: var(--space-xl) 0; }
+  .stats__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-sm); margin: 0; }
+  .stats__tile { display: flex; flex-direction: column; padding: var(--space-md); background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md); }
+  .stats__label { order: 2; margin-top: var(--space-2xs); color: var(--color-text-muted); font-size: var(--text-label-sm); font-weight: 700; letter-spacing: var(--tracking-label-sm); text-transform: uppercase; }
+  .stats__value { order: 1; margin: 0; font-family: var(--font-display); font-size: var(--text-headline-lg); font-weight: var(--display-weight); letter-spacing: -0.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .stats__note { order: 3; margin: 0; color: var(--color-text-subtle); font-size: var(--text-body-sm); }
+  .stats__sample { margin-top: var(--space-xs); color: var(--color-text-subtle); font-size: var(--text-body-sm); }
+  @media (min-width: 768px) { .stats__grid { grid-template-columns: repeat(4, 1fr); gap: var(--gutter); } .stats__tile { padding: var(--space-lg); } }
+</style>

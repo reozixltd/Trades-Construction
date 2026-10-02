@@ -1,0 +1,39 @@
+---
+/** Form & Trade mark from the Stitch export, recoloured through tokens so it follows the theme. */
+import { business } from '@/config/business';
+interface Props {
+  inverse?: boolean;
+}
+const { inverse = false } = Astro.props;
+---
+
+<a href="/" class:list={['logo', { 'logo--inverse': inverse }]} aria-label={`${business.tradingName} — home`}>
+  <svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true">
+    <rect x="4" y="4" width="40" height="40" rx="8" class="logo__tile" />
+    <path d="M12 12H36V18H18V32H12V12Z" class="logo__accent" />
+    <rect x="22" y="20" width="14" height="14" rx="2" class="logo__window" />
+    <circle cx="29" cy="27" r="3" class="logo__dot" />
+  </svg>
+  <span class="logo__text">
+    <span class="logo__name">{business.tradingName}</span>
+    <span class="logo__tag">{business.tagline}</span>
+  </span>
+</a>
+
+<style>
+  .logo { display: inline-flex; align-items: center; gap: var(--space-xs); text-decoration: none; color: var(--color-ink); }
+  .logo:hover { color: var(--color-ink); }
+  .logo__tile { fill: var(--color-ink); }
+  .logo__accent { fill: var(--color-accent); }
+  .logo__window { fill: #fff; }
+  .logo__dot { fill: var(--color-ink); }
+  .logo__text { display: flex; flex-direction: column; line-height: 1.1; }
+  .logo__name { font-family: var(--font-display); font-size: 1.125rem; font-weight: 800; letter-spacing: -0.02em; text-transform: uppercase; }
+  .logo__tag { margin-top: 2px; color: var(--color-text-subtle); font-size: 0.5625rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; }
+  @media (max-width: 380px) { .logo__tag { display: none; } }
+  .logo--inverse, .logo--inverse:hover { color: var(--color-on-dark); }
+  .logo--inverse .logo__tile { fill: #fff; }
+  .logo--inverse .logo__window { fill: var(--color-ink); }
+  .logo--inverse .logo__dot { fill: #fff; }
+  .logo--inverse .logo__tag { color: var(--color-on-dark-muted); }
+</style>

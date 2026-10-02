@@ -1,0 +1,86 @@
+---
+/** Featured case study with a keyboard-operable before/after comparison and quoted-vs-final price. */
+import type { CollectionEntry } from 'astro:content';
+import { formatAud } from '@/lib/format';
+import SectionHeading from '../ui/SectionHeading.astro';
+import Photo from '../ui/Photo.astro';
+import { isPhotoSlot } from '@/lib/photos';
+import Badge from '../ui/Badge.astro';
+import { business } from '@/config/business';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+const { project } = Astro.props;
+const p = project.data;
+const cs = p.caseStudy!;
+const afterSlot = `project-${project.id}`;
+const beforeSlot = `project-${project.id}-before`;
+const delta = ((cs.final - cs.quoted) / cs.quoted) * 100;
+---
+
+<section class="section" aria-labelledby="case-title">
+  <div class="container">
+    <SectionHeading eyebrow="Case study" title={`${p.title}, ${p.suburb}`} id="case-title">
+      <div class="case__tags">
+        {business.demoMode && <Badge tone="warning">Sample project</Badge>}
+        <Badge tone="neutral">{p.duration}</Badge>
+        <Badge tone="success">{delta.toFixed(1)}% over quote</Badge>
+      </div>
+    </SectionHeading>
+
+    <div class="case">
+      <div class="compare" data-compare style="--pos: 50%">
+        <div class="compare__layer">{isPhotoSlot(beforeSlot) && <Photo slot={beforeSlot} ratio="4 / 3" chip="Before" tone={cs.beforeTone} sizes="(min-width: 960px) 55vw, 100vw" />}</div>
+        <div class="compare__layer compare__layer--after">{isPhotoSlot(afterSlot) && <Photo slot={afterSlot} ratio="4 / 3" chip="After" tone={p.tone} sizes="(min-width: 960px) 55vw, 100vw" />}</div>
+        <div class="compare__handle" aria-hidden="true"></div>
+        <label class="visually-hidden" for="compare-range">Before and after comparison</label>
+        <input id="compare-range" class="compare__range" type="range" min="0" max="100" value="50" data-compare-range />
+      </div>
+
+      <div class="case__panel">
+        <p class="case__summary">{p.summary}</p>
+        <h3 class="case__subhead">What we solved</h3>
+        <ol role="list" class="case__list">
+          {cs.challenges.map((c, i) => (
+            <li><span class="case__n">{i + 1}</span><div><strong>{c.title}.</strong> {c.text}</div></li>
+          ))}
+        </ol>
+        <dl class="case__money">
+          <div><dt>Fixed quote</dt><dd>{formatAud(cs.quoted)}</dd></div>
+          <div><dt>Final invoice</dt><dd class="case__final">{formatAud(cs.final)}</dd></div>
+        </dl>
+        <p class="case__fine">{cs.varianceNote}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>import '@/scripts/before-after';</script>
+
+<style>
+  .case__tags { display: flex; gap: var(--space-xs); flex-wrap: wrap; }
+  .case { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xl); }
+  .compare { position: relative; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--color-line); }
+  .compare__layer :global(.ph), .compare__layer :global(.photo) { border-radius: 0; }
+  .compare__layer--after { position: absolute; inset: 0; clip-path: inset(0 0 0 var(--pos)); }
+  .compare__layer--after :global(.ph__label), .compare__layer--after :global(.photo__chip) { left: auto; right: var(--space-sm); }
+  .compare__handle { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 3px; margin-left: -1.5px; background: var(--color-surface); box-shadow: 0 0 0 1px var(--color-line-strong); pointer-events: none; }
+  .compare__handle::after { content: '⇆'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 50%; background: var(--color-surface); color: var(--color-ink); font-weight: 700; box-shadow: var(--shadow-2); }
+  .compare__range { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; }
+  .compare__range:focus-visible ~ .compare__handle, .compare:focus-within .compare__handle::after { box-shadow: var(--focus-ring); }
+
+  .case__summary { font-size: var(--text-body-lg); line-height: 1.55; }
+  .case__subhead { margin-top: var(--space-lg); font-family: var(--font-body); font-size: var(--text-label); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--color-text-muted); }
+  .case__list { margin-top: var(--space-sm); }
+  .case__list li { display: flex; gap: var(--space-sm); padding-block: var(--space-sm); border-bottom: 1px solid var(--color-inset); font-size: var(--text-body-sm); line-height: 1.55; }
+  .case__n { display: grid; place-items: center; flex-shrink: 0; width: 1.5rem; height: 1.5rem; border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm); font-size: var(--text-label-sm); font-weight: 700; }
+  .case__money { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm); margin: var(--space-lg) 0 0; }
+  .case__money div { padding: var(--space-md); background: var(--color-inset); border-radius: var(--radius-md); }
+  .case__money dt { color: var(--color-text-muted); font-size: var(--text-label-sm); font-weight: 700; letter-spacing: var(--tracking-label-sm); text-transform: uppercase; }
+  .case__money dd { margin: 0; font-family: var(--font-display); font-size: var(--text-headline-md); font-weight: var(--display-weight); font-variant-numeric: tabular-nums; }
+  .case__final { color: var(--color-accent-text); }
+  .case__fine { margin-top: var(--space-xs); color: var(--color-text-subtle); font-size: var(--text-body-sm); }
+
+  @media (min-width: 960px) { .case { grid-template-columns: 1.3fr 1fr; align-items: start; } }
+</style>

@@ -1,0 +1,107 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/sections/PageHeader.astro';
+import ProjectGrid from '@/components/sections/ProjectGrid.astro';
+import QuoteSection from '@/components/sections/QuoteSection.astro';
+import Faq from '@/components/sections/Faq.astro';
+import TrustStrip from '@/components/layout/TrustStrip.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
+import Badge from '@/components/ui/Badge.astro';
+import Photo from '@/components/ui/Photo.astro';
+import { isPhotoSlot } from '@/lib/photos';
+import { business } from '@/config/business';
+import { formatAud, telHref } from '@/lib/format';
+
+export async function getStaticPaths() {
+  const services = await getCollection('services');
+  return services.map((service) => ({ params: { slug: service.id }, props: { service } }));
+}
+
+interface Props {
+  service: CollectionEntry<'services'>;
+}
+const { service } = Astro.props;
+const s = service.data;
+const { Content } = await render(service);
+const photoSlot = `service-${service.id}`;
+const projects = (await getCollection('projects')).filter((p) => p.data.service === service.id);
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: s.title,
+  description: s.summary,
+  provider: { '@type': 'HomeAndConstructionBusiness', name: business.tradingName, telephone: business.contact.phone },
+  areaServed: business.headline.area,
+  offers: { '@type': 'Offer', priceCurrency: 'AUD', price: s.priceFrom, description: s.priceNote },
+};
+---
+
+<BaseLayout title={s.seoTitle} description={s.seoDescription} schema={schema}>
+  <PageHeader eyebrow={s.eyebrow} title={s.title} lead={s.summary} crumbs={[{ label: 'Services', href: '/services/' }, { label: s.title }]}>
+    <Button href={`/quote/?service=${service.id}`} variant="accent" size="lg" iconEnd="arrowRight">Get a quote</Button>
+    <Button href={telHref(business.contact.phone)} variant="outline" size="lg" icon="phone">{business.contact.phone}</Button>
+  </PageHeader>
+  <TrustStrip />
+
+  <section class="section">
+    <div class="container detail">
+      <div class="prose">
+        {isPhotoSlot(photoSlot) && <Photo slot={photoSlot} ratio="16 / 9" priority sizes="(min-width: 960px) 60vw, 100vw" />}
+        <Content />
+        <h2>What’s included</h2>
+        <ul role="list" class="includes">
+          {s.includes.map((i) => <li><Icon name="checkCircle" size={18} />{i}</li>)}
+        </ul>
+      </div>
+
+      <aside class="price" aria-label="Pricing">
+        <p class="price__label">From</p>
+        <p class="price__value">{formatAud(s.priceFrom)}{s.priceUnit && <span> {s.priceUnit}</span>}</p>
+        <p class="price__note">{s.priceNote}</p>
+        <dl class="price__meta">
+          <div><dt>Typical time</dt><dd>{s.typicalTime}</dd></div>
+          <div><dt>Licence</dt><dd>{business.licences.map((l) => l.number).join(', ')}</dd></div>
+        </dl>
+        {s.emergency && <p class="price__badge" data-live="emergency"><Badge tone="danger">{business.emergency.headline}</Badge></p>}
+        <Button href={`/quote/?service=${service.id}`} variant="accent" block>Request a price</Button>
+      </aside>
+    </div>
+  </section>
+
+  {
+    projects.length > 0 && (
+      <section class="section section--surface" aria-labelledby="svc-projects">
+        <div class="container">
+          <SectionHeading eyebrow="Recent jobs" title={`${s.title}: recent work`} id="svc-projects" />
+          <ProjectGrid projects={projects} />
+        </div>
+      </section>
+    )
+  }
+
+  <Faq items={s.faqs} title={`${s.title}: questions`} />
+  <QuoteSection title={`Get a quote for ${s.title.toLowerCase()}`} source={`service:${service.id}`} />
+</BaseLayout>
+
+<style>
+  .detail { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xl); }
+  .includes li { display: flex; gap: var(--space-xs); align-items: flex-start; }
+  .includes :global(.icon) { margin-top: 4px; color: var(--color-success); }
+  .price { align-self: start; padding: var(--space-lg); background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md); box-shadow: var(--shadow-1); }
+  .price__label { color: var(--color-text-muted); font-size: var(--text-label-sm); font-weight: 700; letter-spacing: var(--tracking-label-sm); text-transform: uppercase; }
+  .price__value { font-family: var(--font-display); font-size: var(--text-headline-lg); font-weight: var(--display-weight); font-variant-numeric: tabular-nums; }
+  .price__value span { font-size: var(--text-body); color: var(--color-text-muted); font-weight: 500; }
+  .price__note { margin-top: var(--space-xs); color: var(--color-text-muted); font-size: var(--text-body-sm); }
+  .price__meta { margin: var(--space-md) 0; font-size: var(--text-body-sm); border-top: 1px solid var(--color-inset); }
+  .price__meta div { display: flex; justify-content: space-between; gap: var(--space-sm); padding-block: var(--space-xs); border-bottom: 1px solid var(--color-inset); }
+  .price__meta dt { color: var(--color-text-muted); }
+  .price__meta dd { margin: 0; font-weight: 700; text-align: right; }
+  .price__badge { margin-bottom: var(--space-md); }
+  @media (min-width: 960px) {
+    .detail { grid-template-columns: minmax(0, 1fr) 22rem; gap: var(--space-2xl); }
+    .price { position: sticky; top: calc(var(--header-height) + var(--space-lg)); }
+  }
+</style>

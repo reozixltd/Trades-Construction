@@ -1,0 +1,53 @@
+---
+/** Quote form framed with reassurance copy — used on the home and service pages. */
+import { business } from '@/config/business';
+import { telHref } from '@/lib/format';
+import SectionHeading from '../ui/SectionHeading.astro';
+import Icon from '../ui/Icon.astro';
+import QuoteForm from './QuoteForm.astro';
+import { getCollection } from 'astro:content';
+
+interface Props {
+  title?: string;
+  source?: string;
+}
+const { title = 'Get a quote', source } = Astro.props;
+const points = [
+  { icon: 'camera', text: 'Add photos and we can often price it without a visit.' },
+  { icon: 'file', text: 'Every price is in writing and includes GST.' },
+  { icon: 'shield', text: `Licensed and insured: ${business.licences.map((l) => `Lic. ${l.number}`).join(', ')}.` },
+] as const;
+const review = (await getCollection('reviews')).map((r) => r.data).sort((a, b) => b.rating - a.rating)[0];
+---
+
+<section class="section section--surface" id="quote" aria-labelledby="quote-title">
+  <div class="container qs">
+    <div>
+      <SectionHeading eyebrow="Free quote" title={title} lead="Three details are enough to start. Photos and the rest are optional." id="quote-title" />
+      <ul role="list" class="qs__points">
+        {points.map((p) => <li><Icon name={p.icon} size={20} />{p.text}</li>)}
+      </ul>
+      {review && (
+        <figure class="qs__review">
+          <p class="qs__stars" role="img" aria-label={`${review.rating} out of 5 stars`}>{'★'.repeat(review.rating)}</p>
+          <blockquote>“{review.text}”</blockquote>
+          <figcaption>{review.name}, {review.suburb}{business.demoMode && ' · sample review'}</figcaption>
+        </figure>
+      )}
+      <p class="qs__call">Rather talk? <a href={telHref(business.contact.phone)}>{business.contact.phone}</a></p>
+    </div>
+    <QuoteForm source={source} />
+  </div>
+</section>
+
+<style>
+  .qs { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xl); }
+  .qs__points li { display: flex; gap: var(--space-sm); align-items: flex-start; padding-block: var(--space-sm); border-bottom: 1px solid var(--color-inset); color: var(--color-text-muted); }
+  .qs__points :global(.icon) { color: var(--color-accent-text); }
+  .qs__call { margin-top: var(--space-lg); font-weight: 600; }
+  .qs__review { margin: var(--space-lg) 0 0; padding: var(--space-md) var(--space-lg); background: var(--color-canvas); border-left: 3px solid var(--color-accent); border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+  .qs__stars { color: var(--color-star-ink); letter-spacing: 2px; }
+  .qs__review blockquote { margin: var(--space-2xs) 0; }
+  .qs__review figcaption { color: var(--color-text-muted); font-size: var(--text-body-sm); }
+  @media (min-width: 960px) { .qs { grid-template-columns: 0.8fr 1.2fr; gap: var(--space-2xl); align-items: start; } }
+</style>

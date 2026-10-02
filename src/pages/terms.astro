@@ -1,0 +1,28 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/sections/PageHeader.astro';
+import { business } from '@/config/business';
+---
+
+<BaseLayout title="Website terms" description={`Terms for using the ${business.tradingName} website and how quotes work.`}>
+  <PageHeader title="Website terms" lead="How the prices and information on this site should be read." crumbs={[{ label: 'Terms' }]} />
+  <section class="section">
+    <div class="container prose">
+      {business.demoMode && <p class="draft">Template for the demo. Each client’s terms must be reviewed for their business before going live.</p>}
+      <h2>Prices on this website</h2>
+      <p>“From” prices are full starting prices for a typical job, including GST. Your price depends on your site and choices, and is confirmed in a written quote or contract before work starts.</p>
+      <h2>Quotes and contracts</h2>
+      <p>A quote request through this site is not a contract. Residential building work over the NSW threshold is done under a written contract, with insurance in place before any deposit is taken.</p>
+      <h2>Photos and examples</h2>
+      <p>Project photos show work we have completed. Results on your job will depend on your property and the scope agreed.</p>
+      <h2>Your consumer rights</h2>
+      <p>Nothing on this website limits your rights under the Australian Consumer Law or the NSW Home Building Act, including statutory warranties.</p>
+      <h2>Contact</h2>
+      <p>{business.legalName} · ABN {business.abn} · {business.contact.email}</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .draft { padding: var(--space-sm) var(--space-md); background: var(--color-warning-soft); border: 1px solid var(--color-warning-line); border-radius: var(--radius-sm); font-size: var(--text-body-sm); }
+</style>

@@ -1,0 +1,52 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { business } from '@/config/business';
+import { buildBusinessSchema } from '@/lib/schema';
+import Hero from '@/components/sections/Hero.astro';
+import TrustStrip from '@/components/layout/TrustStrip.astro';
+import ServicesGrid from '@/components/sections/ServicesGrid.astro';
+import HowItWorks from '@/components/sections/HowItWorks.astro';
+import CaseStudy from '@/components/sections/CaseStudy.astro';
+import ProjectGrid from '@/components/sections/ProjectGrid.astro';
+import Pricing from '@/components/sections/Pricing.astro';
+import Reviews from '@/components/sections/Reviews.astro';
+import AreaChecker from '@/components/sections/AreaChecker.astro';
+import QuoteSection from '@/components/sections/QuoteSection.astro';
+import Faq from '@/components/sections/Faq.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import Button from '@/components/ui/Button.astro';
+
+const projects = await getCollection('projects');
+const caseStudy = projects.find((p) => p.data.caseStudy);
+const recent = projects.filter((p) => p !== caseStudy).slice(0, 3);
+const reviews = await getCollection('reviews');
+const schema = buildBusinessSchema(business, reviews.map((r) => r.data), Astro.site?.href);
+---
+
+<BaseLayout
+  title={`${business.headline.trade} in ${business.headline.area} | ${business.tradingName}`}
+  description={`Licensed builders, carpenters and repair trades across ${business.headline.area}. Fixed written quotes, photo quotes and fast repairs.`}
+  schema={schema}
+>
+  <Hero />
+  <TrustStrip />
+  <ServicesGrid />
+  <HowItWorks />
+  {caseStudy && <CaseStudy project={caseStudy} />}
+
+  <section class="section section--surface" aria-labelledby="recent-title">
+    <div class="container">
+      <SectionHeading eyebrow="Recent work" title="Jobs we’ve finished lately" id="recent-title">
+        <Button href="/projects/" variant="outline" iconEnd="arrowRight">All projects</Button>
+      </SectionHeading>
+      <ProjectGrid projects={recent} />
+    </div>
+  </section>
+
+  <Pricing />
+  <Reviews />
+  <AreaChecker />
+  <QuoteSection source="home" />
+  <Faq />
+</BaseLayout>
