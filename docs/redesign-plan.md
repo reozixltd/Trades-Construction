@@ -45,7 +45,7 @@ Rulings are decisions taken on the owner's behalf; each names its cost if wrong.
 - [x] B12 Closing CTA, footer, call bar
 - [x] B13 Sub-pages (PageHeader, all routes)
 - [x] C1 Media pipeline (`media-src/flow/` → `public/videos/`)
-- [ ] C2 Hero video · C3 Closing video · C4 Interlude (optional) · C5 Before/after pair (optional): **waiting on Flow files**
+- [x] C2 Hero video · C3 Closing video · C4 Interlude · C5 Before/after pair (Flow files supplied; see "Flow footage, as supplied")
 - [x] D1 Responsive pass · D2 Accessibility · D3 Performance + `og:image`
 - [x] E1 Regression (Chromium, Firefox, WebKit: smoke 12/12 in each)
 - [x] E2 Polish, whole-branch review, report
@@ -74,8 +74,7 @@ Rulings are decisions taken on the owner's behalf; each names its cost if wrong.
   and two phone buttons crowded the headline. Cost if wrong: delete one media query in `Hero.astro`.
 - **The video pause button sits top-right, under the header.** Bottom-right collided with the call bar on phones and
   with the trust strip on desktop. Cost if wrong: one custom property (`--video-toggle-inset`).
-- **No loop cross-fade in `tools/media.mjs`.** It doubles the encode and softens the join; a take with matching
-  first and last frames loops cleanly without it. Cost if wrong: a visible jump every 8 s until a filter is added.
+- **No loop cross-fade in `tools/media.mjs`.** Reversed once the footage arrived — see "Flow footage, as supplied".
 - **Pressing "Send my request" with a mouse or finger does not move focus to the button.** Moving focus cleared the
   edited field's error, the page shifted, and Safari dropped the tap. Keyboard focus is unchanged. Cost if wrong:
   delete one line in `quote-form.ts`.
@@ -121,6 +120,28 @@ and WebKit afterwards):
 - Final: minor (deferred): on a slow, uncompressed connection the phone hero shifts once (CLS 0.02, target 0.05)
   when the service links under the headline arrive in a later chunk of HTML than the headline.
 
+### Flow footage, as supplied
+
+Three 10 s 1080p 24 fps clips and the matched before/after pair arrived. Checked after transcoding: video test all
+PASS in Chrome, smoke 16/16 in Chromium, Firefox and WebKit, header text over the brightest part of the hero clip
+7.5:1 or better in both themes, home LCP 1.7 s (phone) and 1.8 s (desktop) throttled.
+
+- Ruling: `tools/media.mjs` now dissolves the last second of each clip into its first. None of the takes loops
+  (first frame against last: 9–13 dB PSNR; after the change the join differs by one frame of motion, 25–26 dB) —
+  cost if wrong: one second of every loop is a dissolve, and a take that already loops gets one it did not need.
+- Ruling: the hero take is cut at 7.5 s (`end` in the clip list). After that the camera has carried the carpenter in
+  behind the headline at desktop widths — cost if wrong: the loop is 6.5 s and the carpenter lowering the level is
+  never shown; delete `end` to restore it.
+- Ruling: below 960px the hero media is anchored at 74% across, so the slice a phone shows holds the carpenter and
+  not the out-of-focus post in the foreground — cost if wrong: one CSS line in `Hero.astro`.
+- Ruling: the builder's wrap in the hero clip carries lettering that is not real words. Kept: it is out of focus and
+  under the hero shade — cost if wrong: a visitor who pauses on it sees nonsense print; fix by regenerating the take.
+- Ruling: the before/after stills came as 16:9, not the 4:3 asked for. Used as they are; the slider shows the middle
+  4:3 of each and the window, ceiling line and bench still line up — cost if wrong: none seen at 390–1440px.
+- The posters are the frame each loop starts on, so the still and the first video frame match.
+- The "Reozix" link in the demo ribbon was 16px tall on phones; it now has a 24px hit area. A stray `nojs.png` test screenshot was removed from the repo root.
+- `docs/photo-credits.md` now lists the generated files; they stay under the "Sample project" labels.
+
 ## Google Flow asset requests
 
 Save raw downloads to `media-src/flow/` (git-ignored) with the exact filenames below. I transcode them to
@@ -128,7 +149,7 @@ Save raw downloads to `media-src/flow/` (git-ignored) with the exact filenames b
 fallback named for it, so nothing is ever broken. AI footage is illustrative: fine while `demoMode` is on and the
 "Sample" labels show; a real client replaces it with their own footage.
 
-Settings for every video: **Veo, 16:9, 8 seconds, 1080p, no audio needed.** Generate 2–4 takes and keep the one with
+Settings for every video: **Veo, 16:9, 8–10 seconds, 1080p, no audio needed.** Generate 2–4 takes and keep the one with
 the steadiest geometry and the calmest left side.
 
 ### FT-V1 · Hero (essential)
@@ -158,7 +179,7 @@ the steadiest geometry and the calmest left side.
 - Avoid: any text, signage, logos, watermarks or captions; warped or bending timber; tools that morph; extra or fused
   fingers; distorted faces; additional workers; cranes or high-rise buildings; American-style houses, vinyl siding or
   basements; jump cuts; fast camera moves; lens flares; heavy filters; a CGI or video-game look; dust bursts.
-- Loop: the clip is not cross-faded when transcoding, so keep the take whose first and last frames match most closely.
+- Loop: the last second is dissolved into the first when transcoding, so the take does not have to loop by itself.
 
 ### FT-V2 · Closing call-to-action (essential; fallback exists)
 

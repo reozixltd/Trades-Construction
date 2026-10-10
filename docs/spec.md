@@ -271,7 +271,7 @@ Known follow-ups:
 ## 15. v0.3: photos and UI/UX Pro Max review
 
 - **Photo slot system** (`config/photo-slots.ts`, `lib/photos.ts`, `ui/Photo.astro`): 17 slots covering the hero, owner, 4 services, 6 projects plus a before shot, and 4 areas. Files are found automatically and served as AVIF/WebP `<Picture>` with responsive widths, a fixed aspect ratio (no layout shift), lazy loading, and an eager, high-priority hero. Missing files fall back to the labelled placeholder.
-- **Demo photos:** Unsplash, free licence (`docs/photo-credits.md`). The shot list for a real client is in `docs/photo-brief.md`.
+- **Demo photos:** Unsplash, free licence, plus AI-generated background video and one before/after pair (`docs/photo-credits.md`). The shot list for a real client is in `docs/photo-brief.md`.
 - **Design review** (`docs/design-review.md`), run with UI/UX Pro Max:
   - Added the service-area map (`ServiceAreaMap`, `lib/geo.ts`, tested).
   - Added the "How it works" funnel (`HowItWorks`, `config/process.ts`).

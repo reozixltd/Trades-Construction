@@ -110,6 +110,9 @@ const film = Boolean(media.src) || media.still === 'hero-poster';
   }
   .hero__services a:hover { color: var(--color-accent-on-dark); }
 
+  /* Narrow screens see a slice of the frame; this keeps the slice on the carpenter rather than the foreground. */
+  @media (max-width: 959.98px) { .hero--film .hero__media :global(:is(img, video)) { object-position: 74% 50%; } }
+
   @media (min-width: 768px) {
     .hero__services { display: flex; flex-wrap: wrap; gap: 0 var(--space-xl); }
     .hero__services a { font-size: 0.9375rem; }

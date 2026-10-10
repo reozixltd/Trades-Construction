@@ -48,14 +48,14 @@ The console demo login is shown on `/console/`. It uses `owner@demo.formandtrade
 
 - Leads, settings and counters are stored in the browser (`localStorage`). They are only visible in the same browser that submitted them, which is fine for a walkthrough but not for production.
 - Owner SMS/email alerts, customer confirmation emails, real auth, and editing content from the console are **planned**. See spec §10.
-- Demo photos are Unsplash stock (free licence; credits in `docs/photo-credits.md`), and projects are labelled "Sample". A live client must use their own job photos for projects.
+- Demo photos are Unsplash stock, and the background video and the before/after pair are AI-generated (sources in `docs/photo-credits.md`). Projects are labelled "Sample". A live client must use their own job photos for projects.
 
 ## Background video (optional)
 
 The hero and the closing call-to-action play a short background clip when one exists, and show a still photo when it does not. Nothing references a file that is missing.
 
-1. Save the raw clips in `media-src/flow/` (git-ignored): `ft-hero-site.mp4`, `ft-craft-joinery.mp4`, and optionally `ft-showcase-kitchen.mp4`. The generation prompts are in `docs/redesign-plan.md`.
-2. Run `npm run media` (`node tools/media.mjs`). It needs ffmpeg on the PATH, or its full path in the `FFMPEG` environment variable. It writes 1080p and 720p files to `public/videos/` and a poster frame to `src/assets/photos/`.
+1. Save the raw clips in `media-src/flow/` (git-ignored): `ft-hero-site.mp4`, `ft-craft-joinery.mp4`, and optionally `ft-showcase-kitchen.mp4`. The generation prompts are in `docs/redesign-plan.md`. A `.jpg` saved there under a photo slot name is copied into `src/assets/photos/` by the same command.
+2. Run `npm run media` (`node tools/media.mjs`). It needs ffmpeg on the PATH, or its full path in the `FFMPEG` environment variable. It writes 1080p and 720p files to `public/videos/` and a poster frame to `src/assets/photos/`. The last second of each clip is dissolved into its first so the loop has no cut; a clip can be cut short with `end` in the list at the top of the tool.
 3. Rebuild. With the preview running, `node tests/e2e/video.mjs <preview-url>` checks playback, the pause button, reduced motion and the load-failure fallback in installed Chrome.
 
 Generated footage is illustrative. It suits the demo while `demoMode` is on; a live client uses their own footage.
