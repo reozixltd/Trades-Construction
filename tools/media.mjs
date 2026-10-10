@@ -11,7 +11,8 @@
  */
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const clips = {
   'ft-hero-site': 'hero-poster',
@@ -27,8 +28,9 @@ const run = (args) => {
 };
 const mb = (file) => `${(statSync(file).size / 1e6).toFixed(1)} MB`;
 const encode = (src, out, width, crf) =>
-  run(['-i', src, '-an', '-vf', `scale='min(${width},iw)':-2,fps=30`, '-c:v', 'libx264', '-preset', 'slow', '-crf', String(crf), '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out]);
+  run(['-i', src, '-an', '-vf', `scale='min(${width},iw)':-2`, '-c:v', 'libx264', '-preset', 'slow', '-crf', String(crf), '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out]);
 
+process.chdir(join(dirname(fileURLToPath(import.meta.url)), '..'));
 mkdirSync('public/videos', { recursive: true });
 let found = 0;
 for (const [name, poster] of Object.entries(clips)) {
@@ -43,7 +45,9 @@ for (const [name, poster] of Object.entries(clips)) {
   const still = join('src', 'assets', 'photos', `${poster}.jpg`);
   encode(src, full, 1920, 24);
   encode(src, small, 1280, 27);
-  run(['-i', src, '-frames:v', '1', '-vf', "scale='min(2000,iw)':-2", '-q:v', '3', still]);
+  // A still exported from the same take wins over the clip's first frame.
+  const supplied = join('media-src', 'flow', `${name}-poster.jpg`);
+  run(['-i', existsSync(supplied) ? supplied : src, '-frames:v', '1', '-vf', "scale='min(2000,iw)':-2", '-q:v', '3', still]);
   console.log(`✓ ${name}: ${mb(full)} (1080p), ${mb(small)} (720p), poster ${still}`);
 }
 if (!found) console.log('Nothing to do. Put the clips in media-src/flow/ (names are in docs/redesign-plan.md).');

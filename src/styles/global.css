@@ -76,7 +76,7 @@ a:hover { color: var(--color-accent-text); }
   --color-text-subtle: var(--color-on-dark-muted);
   --color-accent-text: var(--color-accent-on-dark);
   --color-line: var(--color-line-dark);
-  --color-line-strong: rgb(246 242 234 / 0.34);
+  --color-line-strong: color-mix(in srgb, var(--color-on-dark) 34%, transparent);
   --focus-ring: var(--focus-ring-dark);
   color: var(--color-on-dark);
 }

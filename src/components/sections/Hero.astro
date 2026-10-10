@@ -70,7 +70,7 @@ const film = Boolean(media.src) || media.still === 'hero-poster';
   .hero__shade {
     position: absolute; inset: 0; pointer-events: none;
     background:
-      linear-gradient(to top, color-mix(in srgb, var(--color-dark) 96%, transparent) 12%, color-mix(in srgb, var(--color-dark) 84%, transparent) 55%, color-mix(in srgb, var(--color-dark) 62%, transparent) 100%);
+      linear-gradient(to top, color-mix(in srgb, var(--color-dark) 96%, transparent) 12%, color-mix(in srgb, var(--color-dark) 84%, transparent) 55%, color-mix(in srgb, var(--color-dark) 72%, transparent) 100%);
   }
 
   .hero__inner { position: relative; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding-block: var(--space-2xl) var(--space-xl); }
@@ -124,7 +124,7 @@ const film = Boolean(media.src) || media.still === 'hero-poster';
       background:
         linear-gradient(90deg, color-mix(in srgb, var(--color-dark) 92%, transparent) 0%, color-mix(in srgb, var(--color-dark) 76%, transparent) 40%, color-mix(in srgb, var(--color-dark) 14%, transparent) 76%),
         linear-gradient(to top, color-mix(in srgb, var(--color-dark) 80%, transparent) 0%, transparent 34%),
-        linear-gradient(to bottom, color-mix(in srgb, var(--color-dark) 55%, transparent) 0%, transparent 22%);
+        linear-gradient(to bottom, color-mix(in srgb, var(--color-dark) 82%, transparent) 0%, color-mix(in srgb, var(--color-dark) 70%, transparent) var(--header-height), transparent calc(var(--header-height) + 20%));
     }
 
     /* plate: the photo is a tall panel on the right; the string line runs into it. */
@@ -133,7 +133,7 @@ const film = Boolean(media.src) || media.still === 'hero-poster';
       background:
         linear-gradient(90deg, var(--color-dark) 0%, var(--color-dark) 56%, color-mix(in srgb, var(--color-dark) 55%, transparent) 64%, transparent 78%),
         linear-gradient(to top, color-mix(in srgb, var(--color-dark) 70%, transparent) 0%, transparent 30%),
-        linear-gradient(to bottom, color-mix(in srgb, var(--color-dark) 60%, transparent) 0%, transparent 20%);
+        linear-gradient(to bottom, color-mix(in srgb, var(--color-dark) 82%, transparent) 0%, color-mix(in srgb, var(--color-dark) 70%, transparent) var(--header-height), transparent calc(var(--header-height) + 20%));
     }
     .hero--plate .hero__copy { max-width: min(46rem, 54vw); }
   }
@@ -145,7 +145,7 @@ const film = Boolean(media.src) || media.still === 'hero-poster';
       animation-delay: calc(var(--i) * 90ms + 120ms);
     }
     .hero__line { transform-origin: left center; animation: hero-line 1500ms var(--ease-out) 520ms both; }
-    .hero__media :global(.video__still), .hero__media :global(video) { animation: hero-settle 2400ms var(--ease-out) both; }
+    .hero__media :global(.video__still) { animation: hero-settle 2400ms var(--ease-out) both; }
   }
   @keyframes hero-rise { from { opacity: 0; transform: translateY(1.25rem); } }
   @keyframes hero-line { from { transform: scaleX(0); } }

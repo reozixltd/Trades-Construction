@@ -143,6 +143,53 @@ await step('emergency toggle hides the banner on the public site', async () => {
   assert.equal(await page.locator('.emergency').isVisible(), true);
 });
 
+await step('menu links stay reachable on a short (landscape phone) screen', async () => {
+  const p = await (await browser.newContext({ viewport: { width: 667, height: 375 } })).newPage();
+  await p.goto(BASE + '/');
+  await p.click('[data-menu-toggle]');
+  const first = p.locator('[data-menu] a[href="/services/"]');
+  await first.waitFor({ state: 'visible' });
+  await p.locator('[data-menu] nav').evaluate((n) => n.scrollTo(0, 0));
+  const box = await first.boundingBox();
+  const navTop = await p.locator('[data-menu] nav').evaluate((n) => n.getBoundingClientRect().top);
+  assert.ok(box.y >= navTop - 1, `first menu link starts ${Math.round(navTop - box.y)}px above the scroll area`);
+  await p.context().close();
+});
+
+await step('share image is a 1.91:1 card of the size the meta tags declare', async () => {
+  await page.goto(BASE + '/');
+  const src = await page.locator('meta[property="og:image"]').getAttribute('content');
+  const size = await page.evaluate((src) => new Promise((done, fail) => {
+    const img = new Image();
+    img.onload = () => done(`${img.naturalWidth}x${img.naturalHeight}`);
+    img.onerror = () => fail(new Error('share image did not load'));
+    img.src = new URL(src).pathname;
+  }), src);
+  const declared = async (p) => Number(await page.locator(`meta[property="og:image:${p}"]`).getAttribute('content'));
+  const [w, h] = [await declared('width'), await declared('height')];
+  assert.equal(size, `${w}x${h}`);
+  assert.ok(Math.abs(w / h - 1200 / 630) < 0.01, `share image is ${w}x${h}`);
+});
+
+await step('without JavaScript the clear home header stays with the hero and nothing is hidden', async () => {
+  const p = await (await browser.newContext({ viewport: { width: 1280, height: 800 }, javaScriptEnabled: false })).newPage();
+  await p.goto(BASE + '/');
+  // Nothing can turn the header solid without the script, so it must not follow the page over the light sections.
+  await p.mouse.wheel(0, 1400);
+  await p.waitForTimeout(800);
+  assert.ok((await p.locator('[data-header]').boundingBox()).y < -40, 'clear header is still on screen after scrolling');
+  assert.equal(await p.locator('[data-reveal]').evaluateAll((els) => els.filter((e) => getComputedStyle(e).opacity !== '1').length), 0);
+  await p.context().close();
+});
+
+await step('printing shows content that has not been scrolled to', async () => {
+  await page.goto(BASE + '/services/repairs-and-maintenance/');
+  await page.emulateMedia({ media: 'print' });
+  const hidden = await page.locator('[data-reveal]').evaluateAll((els) => els.filter((e) => getComputedStyle(e).opacity !== '1').length);
+  await page.emulateMedia({ media: 'screen' });
+  assert.equal(hidden, 0);
+});
+
 await step('no uncaught JavaScript errors', async () => {
   assert.deepEqual(errors, []);
 });

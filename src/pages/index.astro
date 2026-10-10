@@ -17,10 +17,13 @@ import Faq from '@/components/sections/Faq.astro';
 import CtaBand from '@/components/sections/CtaBand.astro';
 import SectionHeading from '@/components/ui/SectionHeading.astro';
 import Button from '@/components/ui/Button.astro';
+import Video from '@/components/ui/Video.astro';
+import { resolveVideo } from '@/lib/media';
 
 const projects = await getCollection('projects');
 const caseStudy = projects.find((p) => p.data.caseStudy);
 const recent = projects.filter((p) => p !== caseStudy).slice(0, 3);
+const interlude = resolveVideo('showcase');
 const reviews = await getCollection('reviews');
 const schema = buildBusinessSchema(business, reviews.map((r) => r.data), Astro.site?.href);
 ---
@@ -36,6 +39,7 @@ const schema = buildBusinessSchema(business, reviews.map((r) => r.data), Astro.s
   <ServicesGrid />
   <HowItWorks />
   {caseStudy && <CaseStudy project={caseStudy} />}
+  {interlude.src && interlude.still && <div class="interlude"><Video name="showcase" parallax /></div>}
 
   <section class="section" aria-labelledby="recent-title">
     <div class="container">
@@ -53,3 +57,8 @@ const schema = buildBusinessSchema(business, reviews.map((r) => r.data), Astro.s
   <Faq />
   <CtaBand title="Plan your project with us" />
 </BaseLayout>
+
+<style>
+  /* A silent pause between the case study and the project list; exists only while the showcase clip does. */
+  .interlude { position: relative; height: clamp(20rem, 68vh, 44rem); }
+</style>

@@ -18,7 +18,7 @@ const slot = `service-${service.id}`;
 
 <article class="card" data-reveal style={`--i: ${index % 2}`}>
   {isPhotoSlot(slot) && (
-    <div class="card__media" data-tilt>
+    <div class="card__media">
       <Photo slot={slot} ratio="3 / 2" sizes="(min-width: 900px) 46vw, 100vw" class="card__photo" />
     </div>
   )}

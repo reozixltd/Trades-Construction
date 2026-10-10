@@ -25,19 +25,4 @@ if (document.documentElement.classList.contains('has-motion')) {
   document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
 }
 
-/* Pointer tilt: a few degrees of perspective on [data-tilt], mouse only. */
-if (matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches) {
-  document.querySelectorAll<HTMLElement>('[data-tilt]').forEach((el) => {
-    el.addEventListener('pointermove', (e) => {
-      const r = el.getBoundingClientRect();
-      el.style.setProperty('--ry', `${(((e.clientX - r.left) / r.width - 0.5) * 5).toFixed(2)}deg`);
-      el.style.setProperty('--rx', `${((0.5 - (e.clientY - r.top) / r.height) * 5).toFixed(2)}deg`);
-    });
-    el.addEventListener('pointerleave', () => {
-      el.style.removeProperty('--rx');
-      el.style.removeProperty('--ry');
-    });
-  });
-}
-
 export {};

@@ -48,7 +48,7 @@ Rulings are decisions taken on the owner's behalf; each names its cost if wrong.
 - [ ] C2 Hero video · C3 Closing video · C4 Interlude (optional) · C5 Before/after pair (optional): **waiting on Flow files**
 - [x] D1 Responsive pass · D2 Accessibility · D3 Performance + `og:image`
 - [x] E1 Regression (Chromium, Firefox, WebKit: smoke 12/12 in each)
-- [ ] E2 Polish + report
+- [x] E2 Polish, whole-branch review, report
 
 ### Rulings
 
@@ -61,7 +61,8 @@ Rulings are decisions taken on the owner's behalf; each names its cost if wrong.
 - **Header overlays the hero on the home page only.** Inner pages open on a light title band where a transparent header
   has nothing to sit on. Cost if wrong: one prop on `BaseLayout`.
 - **Mobile menu is a native modal `<dialog>`.** Focus trap, Escape and focus return come from the browser instead of
-  script. Cost if wrong: browsers before 2022 show the menu without a backdrop.
+  script. Cost if wrong: in browsers without `<dialog>` (Safari before 15.4, March 2022) the menu does not open; the
+  header phone link, the call bar and the footer links still work.
 - **Hero headline has no coloured phrase; services and projects carry no numbering.** Accent colour is reserved for
   conversion, and only the process (a real sequence) and the form steps are numbered. Cost if wrong: styling only.
 - **Reviews moved from a dark band to the page ground.** The case study above it is the one dark section mid-page; two
@@ -81,6 +82,45 @@ Rulings are decisions taken on the owner's behalf; each names its cost if wrong.
 - **The menu button takes focus before the menu opens.** Safari does not focus a clicked button, so the dialog had
   nothing to hand focus back to on close. Cost if wrong: none known.
 
+### Final review (whole branch, fresh reviewer)
+
+No critical findings. Fixed in one pass, each with a check that failed first (smoke suite 16/16 in Chromium, Firefox
+and WebKit afterwards):
+
+- Final: fixed menu links clipped on short screens (landscape phones) — smoke "menu links stay reachable on a short
+  screen" RED→GREEN.
+- Final: fixed share image emitted at 1200x1500 while the tags said 1200x630 — it is now cropped to 1.91:1 and the
+  tags carry its real size (1000x525 from the stock photo, 1200x630 from a video poster) — smoke "share image is a
+  1.91:1 card" RED→GREEN.
+- Final: fixed clear home header following the page over light sections when the site script does not run — it is
+  sticky only once `site.ts` has marked it ready — smoke "without JavaScript the clear home header stays with the
+  hero" RED→GREEN.
+- Final: fixed header text contrast over the hero photo (worst pixels 2.5:1) — the top shade now holds through the
+  header's height; measured worst case 6.2:1 across both themes, both hero layouts, 390–1920px.
+- Final: fixed the kitchen interlude that this plan promised but no page rendered — built, and checked with a
+  synthetic clip (present with the clip, absent without it).
+- Final: fixed reveal content printing blank — the reveal rules are screen-only — smoke "printing shows content that
+  has not been scrolled to" RED→GREEN.
+- Final: fixed (re-graded from minor) the hero video being scaled 12% with no drift while its still drifted; the
+  media tool forcing 30 fps on 24 fps footage, ignoring a supplied poster and depending on the working directory;
+  a hard-coded craft tint and a faux-bold heading in the precision theme; the pause button reading poorly on bright
+  footage. Pointer tilt was removed: the card link covered the photo so it never fired, and it was not one of the
+  four motion behaviours.
+- Final: Ruling: the quote button's `mousedown` handler stands — the reviewer found no functional downside in three
+  engines; on a phone the on-screen keyboard may stay up while a send error shows under the button — cost if wrong:
+  a customer on a short phone has to dismiss the keyboard to read a send error (not checked on a real device).
+- Final: minor (deferred): unused `reveal`/`parallax` props on `Photo.astro` and the `data-reveal='mask'` rules they
+  drive; unused `align` prop on `SectionHeading.astro`; a dead `~` selector in `CaseStudy.astro`; unused tokens
+  `--color-star`, `--color-timber`, `--color-warm`, `--font-mono`, `--overlay`.
+- Final: minor (deferred): the hero's "Sample project" card picks the first featured project from an unsorted
+  collection, so it can differ between builds (line predates the redesign).
+- Final: minor (deferred): footer and breadcrumb links are 16px tall at phone width (29px pitch, which meets the
+  WCAG 2.2 spacing exception); a taller hit area would be kinder.
+- Final: minor (deferred): the clip list in `tools/media.mjs` repeats `src/config/media.ts`; a transcode that fails
+  midway leaves a partial file the next build treats as present (the page falls back to the still at run time).
+- Final: minor (deferred): on a slow, uncompressed connection the phone hero shifts once (CLS 0.02, target 0.05)
+  when the service links under the headline arrive in a later chunk of HTML than the headline.
+
 ## Google Flow asset requests
 
 Save raw downloads to `media-src/flow/` (git-ignored) with the exact filenames below. I transcode them to
@@ -95,7 +135,8 @@ the steadiest geometry and the calmest left side.
 
 - Purpose: full-bleed background behind the home-page headline.
 - Save as: `media-src/flow/ft-hero-site.mp4` → I produce `public/videos/ft-hero-site.mp4` and `src/assets/photos/hero-poster.jpg`.
-- Optional: a still exported from the same take as `media-src/flow/ft-hero-site-poster.jpg`.
+- Optional: a still exported from the same take as `media-src/flow/ft-hero-site-poster.jpg` (used instead of the
+  clip's first frame; the same `<name>-poster.jpg` convention works for the other clips).
 - Fallback until then: split hero using the existing `hero.jpg`.
 
 **Prompt**
@@ -143,7 +184,8 @@ the steadiest geometry and the calmest left side.
 
 ### FT-V3 · Kitchen interlude (optional)
 
-- Purpose: one full-bleed pause between the case study and Recent work. The section is omitted while the file is absent.
+- Purpose: one full-bleed, silent pause between the case study and Recent work (`.interlude` in `src/pages/index.astro`).
+  The section is omitted while the file is absent.
 - Save as: `media-src/flow/ft-showcase-kitchen.mp4` → `public/videos/ft-showcase-kitchen.mp4`, poster `src/assets/photos/showcase-poster.jpg`.
 
 **Prompt**

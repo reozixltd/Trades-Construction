@@ -40,6 +40,6 @@ const areas = (await getCollection('areas')).map((a) => ({ ...a, slot: `area-${a
   .area { overflow: hidden; display: grid; gap: var(--space-2xs); padding: var(--space-lg); background: var(--color-canvas); border: 1px solid var(--color-line); border-radius: var(--radius-md); text-decoration: none; }
   .area:hover { border-color: var(--color-ink); color: inherit; }
   .area :global(.icon) { color: var(--color-accent-text); }
-  .area__name { font-family: var(--font-display); font-size: var(--text-headline-sm); font-weight: 700; }
+  .area__name { font-family: var(--font-display); font-size: var(--text-headline-sm); font-weight: var(--display-weight); }
   .area__name span, .area__meta, .area__near { color: var(--color-text-muted); font-size: var(--text-body-sm); font-weight: 500; }
 </style>

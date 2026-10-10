@@ -15,6 +15,7 @@ if (header) {
   const onScroll = () => header.toggleAttribute('data-scrolled', scrollY > 96);
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+  header.toggleAttribute('data-ready', true);
 }
 
 /* Mobile menu: a modal <dialog>, so the focus trap, Escape and the return of focus are the browser's. The toggle
