@@ -154,7 +154,7 @@ const areaData = JSON.stringify({ covered: business.areas.covered, nearby: busin
   .field label, .field legend { font-size: var(--text-label); font-weight: 600; color: var(--color-text); }
   .field input, .field select, .field textarea {
     width: 100%; min-height: 3rem; padding: var(--space-xs) var(--space-sm);
-    background: var(--color-surface); border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm);
+    background: var(--color-surface); border: 1px solid var(--color-field-line); border-radius: var(--radius-sm);
     font-size: 1rem; /* 16px stops iOS zoom */
   }
   .field textarea { resize: vertical; line-height: 1.5; }
@@ -169,7 +169,7 @@ const areaData = JSON.stringify({ covered: business.areas.covered, nearby: busin
   .chips legend { margin-bottom: var(--space-2xs); }
   .chip { position: relative; }
   .chip input { position: absolute; opacity: 0; inset: 0; }
-  .chip span { display: inline-flex; align-items: center; min-height: var(--control-height); padding: 0 var(--space-md); border: 1px solid var(--color-line-strong); border-radius: var(--radius-full); font-size: var(--text-body-sm); font-weight: 600; cursor: pointer; transition: background-color var(--duration), border-color var(--duration), color var(--duration); }
+  .chip span { display: inline-flex; align-items: center; min-height: var(--control-height); padding: 0 var(--space-md); border: 1px solid var(--color-field-line); border-radius: var(--radius-full); font-size: var(--text-body-sm); font-weight: 600; cursor: pointer; transition: background-color var(--duration), border-color var(--duration), color var(--duration); }
   .chip input:checked + span { background: var(--color-ink); border-color: var(--color-ink); color: var(--color-on-dark); }
   .chip--danger input:checked + span { background: var(--color-danger); border-color: var(--color-danger); }
   .chip input:focus-visible + span { box-shadow: var(--focus-ring); }

@@ -23,7 +23,8 @@ import Icon from '../ui/Icon.astro';
   .emergency__inner { display: flex; align-items: center; gap: var(--space-xs); min-height: 2.5rem; font-size: var(--text-body-sm); }
   .emergency p { flex: 1; }
   .emergency__extra { display: none; }
-  .emergency__call { color: #fff; font-weight: 700; white-space: nowrap; }
+  /* Padding with an equal negative margin: a 44px tap area without a taller banner. */
+  .emergency__call { display: inline-block; padding-block: 0.7rem; margin-block: -0.7rem; color: #fff; font-weight: 700; white-space: nowrap; }
   .emergency__call:hover { color: #fff; }
   @media (min-width: 640px) { .emergency__extra { display: inline; } }
 </style>

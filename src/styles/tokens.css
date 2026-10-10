@@ -20,6 +20,7 @@
   --color-inset: #e6e1d7;        /* stone */
   --color-line: #ddd7cb;
   --color-line-strong: #c4bcad;
+  --color-field-line: #8c8477;   /* edges of inputs: 3:1 on paper (WCAG 1.4.11) */
   --color-sheet: #e3e8ea;        /* drafting-film band */
   --color-linework: #5f7482;     /* blueprint line, decorative only */
   --color-timber: #b08968;       /* decorative only */
@@ -42,7 +43,7 @@
   --color-warm: #d97706;
 
   /* Colour — semantic */
-  --color-success: #047857;
+  --color-success: #03694b;
   --color-success-soft: #e7f3ec;
   --color-success-line: #a7d7c0;
   --color-warning: #a24b08;
@@ -127,6 +128,7 @@
   --color-inset: #e0e4e6;
   --color-line: #d3d8db;
   --color-line-strong: #b4bcc1;
+  --color-field-line: #7c858c;
   --color-sheet: #e2e7ea;
   --color-linework: #5b6770;
   --color-timber: #8d99a1;       /* steel */
@@ -142,9 +144,9 @@
   --color-accent-hover: #f97316; /* lighter on hover so graphite text keeps AA */
   --color-accent-soft: #fdeee2;
   --color-accent-line: #f6cfb1;
-  --color-accent-text: #b6430a;
+  --color-accent-text: #a83c08;
   --color-on-accent: #14181c;    /* graphite on amber passes AA; white does not */
-  --color-success: #15803d;
+  --color-success: #166534;
   --color-overlay-chip: rgb(20 24 28 / 0.8);
 
   --font-display: 'Barlow Condensed', 'Barlow Fallback', 'Arial Narrow', sans-serif;

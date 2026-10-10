@@ -70,7 +70,7 @@ const film = Boolean(media.src) || media.still === 'hero-poster';
   .hero__shade {
     position: absolute; inset: 0; pointer-events: none;
     background:
-      linear-gradient(to top, color-mix(in srgb, var(--color-dark) 96%, transparent) 12%, color-mix(in srgb, var(--color-dark) 88%, transparent) 55%, color-mix(in srgb, var(--color-dark) 72%, transparent) 100%);
+      linear-gradient(to top, color-mix(in srgb, var(--color-dark) 96%, transparent) 12%, color-mix(in srgb, var(--color-dark) 84%, transparent) 55%, color-mix(in srgb, var(--color-dark) 62%, transparent) 100%);
   }
 
   .hero__inner { position: relative; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding-block: var(--space-2xl) var(--space-xl); }
@@ -80,6 +80,8 @@ const film = Boolean(media.src) || media.still === 'hero-poster';
   :global([data-theme='precision']) .hero h1 { max-width: 17ch; font-size: clamp(3rem, min(1.2rem + 5.6vw, 11.5svh), 6rem); }
   .hero__intro { margin-top: var(--space-lg); max-width: 34rem; color: var(--color-on-dark-muted); font-size: var(--text-body-lg); line-height: 1.55; }
   .hero__ctas { display: grid; gap: var(--space-sm); margin-top: var(--space-xl); }
+  /* Phones already have the call bar pinned to the bottom of the screen, so the hero keeps one button. */
+  @media (max-width: 479px) { .hero__ctas > :global(:last-child) { display: none; } }
   @media (min-width: 480px) { .hero__ctas { display: flex; flex-wrap: wrap; } }
   .hero__promise { display: flex; align-items: center; gap: var(--space-xs); margin-top: var(--space-md); color: var(--color-on-dark-muted); font-size: var(--text-body-sm); font-weight: 500; }
 

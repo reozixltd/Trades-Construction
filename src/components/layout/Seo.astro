@@ -1,6 +1,8 @@
 ---
 import { jsonLd } from '@/lib/schema';
+import { getImage } from 'astro:assets';
 import { business } from '@/config/business';
+import { getPhoto, photoAlt } from '@/lib/photos';
 
 interface Props {
   title: string;
@@ -12,6 +14,11 @@ interface Props {
 const { title, description, noindex = false, schema } = Astro.props;
 const fullTitle = title.includes(business.tradingName) ? title : `${title} | ${business.tradingName}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+
+// Share image: the hero frame, cropped to the 1200x630 card that link previews expect.
+const shareSlot = getPhoto('hero-poster') ? 'hero-poster' : 'hero';
+const sharePhoto = getPhoto(shareSlot);
+const share = sharePhoto && (await getImage({ src: sharePhoto, width: 1200, height: 630, format: 'jpg', quality: 78 }));
 ---
 
 <title>{fullTitle}</title>
@@ -23,4 +30,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonical} />
 <meta property="og:locale" content="en_AU" />
+{share && (
+  <>
+    <meta property="og:image" content={new URL(share.src, Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={photoAlt(shareSlot)} />
+    <meta name="twitter:card" content="summary_large_image" />
+  </>
+)}
 {schema && <script type="application/ld+json" set:html={jsonLd(schema)} />}
