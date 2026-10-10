@@ -13,7 +13,8 @@ interface Props {
 
 const { title, description, noindex = false, schema } = Astro.props;
 const fullTitle = title.includes(business.tradingName) ? title : `${title} | ${business.tradingName}`;
-const canonical = new URL(Astro.url.pathname, Astro.site);
+// The 404 page is served at whatever address was asked for, so it has none of its own to declare.
+const canonical = Astro.url.pathname.startsWith('/404') ? undefined : new URL(Astro.url.pathname, Astro.site);
 
 // Share image: the hero frame, cropped to the 1.91:1 card that link previews expect (1200x630, or smaller
 // when the photo is narrower: the image service does not enlarge).
@@ -26,12 +27,12 @@ const share = sharePhoto && (await getImage({ src: sharePhoto, width: shareWidth
 
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
-<link rel="canonical" href={canonical} />
+{canonical && <link rel="canonical" href={canonical} />}
 {noindex && <meta name="robots" content="noindex, nofollow" />}
 <meta property="og:type" content="website" />
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
-<meta property="og:url" content={canonical} />
+{canonical && <meta property="og:url" content={canonical} />}
 <meta property="og:locale" content="en_AU" />
 {share && (
   <>

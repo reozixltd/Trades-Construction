@@ -38,8 +38,7 @@
   }
   .has-motion [data-reveal='line'].is-in { transform: none; }
 
-  /* Pages cross-fade instead of flashing; the header holds still. */
-  @view-transition { navigation: auto; }
+  /* The page cross-fade; it is switched on in BaseLayout's head. */
   ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 260ms; }
 }
 

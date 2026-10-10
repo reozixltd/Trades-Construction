@@ -23,7 +23,8 @@ for (const file of walk(outDir).filter((f) => f.endsWith('.html'))) {
   const root = rel ? '../'.repeat(rel.split('/').length) : './';
   let html = readFileSync(file, 'utf8');
 
-  html = html.replace(/(href|src)="\/(?!\/)([^"#?]*)([^"]*)"/g, (_m, attr, path, rest) => {
+  // "src" also catches data-src; data-src-small is the 720p file a background video loads on small screens.
+  html = html.replace(/(href|src|src-small)="\/(?!\/)([^"#?]*)([^"]*)"/g, (_m, attr, path, rest) => {
     let target = path;
     if (target === '' || target.endsWith('/')) target += 'index.html';
     return `${attr}="${posix.normalize(root + target)}${rest}"`;

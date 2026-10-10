@@ -43,6 +43,8 @@ const themeColor: Record<typeof business.theme, string> = { craft: '#26221d', pr
     <meta name="theme-color" content={themeColor[business.theme]} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     {preload[business.theme].map((href) => <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />)}
+    <!-- Pages cross-fade instead of flashing. Inline, because Chrome reads this as the new page starts: from a linked stylesheet it arrives too late on a first visit, and the fade is dropped with a console error. -->
+    <style is:inline>@media screen and (prefers-reduced-motion: no-preference) { @view-transition { navigation: auto; } }</style>
     <!-- Scroll reveals hide content only when the script that reveals it can run; undone if it never arrives. -->
     <script is:inline>
       if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {

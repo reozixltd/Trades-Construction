@@ -126,6 +126,20 @@ await step('lead appears in the console; status can change', async () => {
   await row.first().click();
   await page.locator('[data-set-status="contacted"]').click();
   await page.locator('[data-detail] .tag', { hasText: 'Contacted' }).waitFor();
+  assert.equal(await page.locator('[data-detail] .detail__action', { hasText: 'Call' }).getAttribute('href'), 'tel:+61491570156');
+  assert.equal(await page.locator('[data-detail] .detail__action', { hasText: 'Email' }).getAttribute('href'), null, 'no email was given, so there is nothing to link to');
+});
+
+await step('robots.txt names a sitemap that exists; a missing page is a 404 that claims no address', async () => {
+  const robots = await page.request.get(BASE + '/robots.txt');
+  assert.equal(robots.status(), 200, 'robots.txt');
+  const sitemap = /^Sitemap: (\S+)$/m.exec(await robots.text())?.[1];
+  assert.ok(sitemap, 'robots.txt has no Sitemap line');
+  assert.equal((await page.request.get(BASE + new URL(sitemap).pathname)).status(), 200, sitemap);
+  const missing = await page.goto(BASE + '/no-such-page/');
+  assert.equal(missing.status(), 404);
+  assert.equal(await page.locator('link[rel="canonical"], meta[property="og:url"]').count(), 0);
+  await page.goto(BASE + '/console/');
 });
 
 await step('emergency toggle hides the banner on the public site', async () => {

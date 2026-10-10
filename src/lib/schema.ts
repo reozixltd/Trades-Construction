@@ -9,7 +9,7 @@ type SchemaInput = Pick<Business, 'demoMode' | 'tradingName' | 'legalName' | 'ab
   intro?: string;
 };
 
-export function buildBusinessSchema(b: SchemaInput, reviews: readonly RatingLike[], url = 'https://trades.reozix.com/') {
+export function buildBusinessSchema(b: SchemaInput, reviews: readonly RatingLike[], url?: string) {
   const schema: Record<string, unknown> & { areaServed: unknown[]; aggregateRating?: unknown } = {
     '@context': 'https://schema.org',
     '@type': 'HomeAndConstructionBusiness',

@@ -46,7 +46,7 @@ export function renderDetail(panel: HTMLElement, lead: Lead, handlers: DetailHan
       { class: 'detail__actions' },
       el('a', { class: 'detail__action detail__action--primary', href: telHref(lead.phone) }, 'Call', el('span', {}, formatPhone(lead.phone))),
       el('a', { class: 'detail__action', href: smsHref(lead.phone) }, 'SMS'),
-      el('a', { class: 'detail__action', href: lead.email ? `mailto:${lead.email}` : '#', 'aria-disabled': lead.email ? undefined : 'true' }, 'Email'),
+      el('a', { class: 'detail__action', href: lead.email ? `mailto:${lead.email}` : undefined, 'aria-disabled': lead.email ? undefined : 'true' }, 'Email'),
     ),
     el('p', { class: 'detail__job' }, lead.job),
     el(

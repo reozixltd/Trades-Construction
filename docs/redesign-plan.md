@@ -142,6 +142,46 @@ PASS in Chrome, smoke 16/16 in Chromium, Firefox and WebKit, header text over th
 - The "Reozix" link in the demo ribbon was 16px tall on phones; it now has a 24px hit area. A stray `nojs.png` test screenshot was removed from the repo root.
 - `docs/photo-credits.md` now lists the generated files; they stay under the "Sample project" labels.
 
+### Frontend to lead store audit
+
+Asked: is everything in the frontend working, connected and routed to the backend. There is no server: the
+"backend" is `LocalLeadRepository` (the visitor's own browser storage). The audit covers the wiring up to that seam.
+
+Checked on the built site: a static pass over all 19 pages (668 internal links, 1043 asset references, fragments,
+label and ARIA ids, sitemap, structured data), then a 26-step browser run in Chromium, Firefox and WebKit: every
+page loads with no failed request or error; header, phone menu, footer, call bar and in-page buttons by clicking;
+service and suburb handed to the quote form; a full request with photos stored field for field and read back in
+the console (contact links, photos, status, notes, filters, CSV); validation, photo rules, spam guard, rate limit,
+blocked storage (no false confirmation), full storage; console settings reaching the public pages; counters;
+clear and sign out. All 26 pass in the three engines. Smoke is now 17/17 in the three engines.
+
+Fixed:
+
+- The site address was `https://trades.reozix.com`, a domain with no DNS record, so on the live host every canonical
+  link, the sitemap, the share image and the structured data pointed at nothing. Ruling: `site` now comes from
+  `SITE_URL`, else Vercel's production domain, else the old value — cost if wrong: a non-Vercel host built without
+  `SITE_URL` still gets the old address. Checked by building with Vercel's variable set; not checked on Vercel itself.
+- `robots.txt` did not exist. It now names the sitemap. Ruling: nothing is disallowed, because the console is kept
+  out of search by `noindex`, which a crawler cannot read on a page it is forbidden to fetch — cost if wrong: crawlers
+  spend a request on `/console/`.
+- The 404 page declared `/404/` as its canonical address and `og:url`. Both are gone from that page.
+- `tools/relativize.mjs` left `data-src-small` root-absolute, so the sub-folder bundle could not load the 720p
+  video on small screens. Checked by serving the bundle from `/demo/trades/` and crawling it at 390 and 1280px.
+- Console: the Email action on a lead with no email was a link to `#`. It is now not a link.
+- The page cross-fade was dropped, with a console error, on the first visit to each page in Chrome: the opt-in sat in
+  a linked stylesheet that had not been applied when the new page started. It is now inline in the head (0 of 12
+  first visits fade before, 12 of 12 after).
+
+Left as they are, for a decision:
+
+- No server. Requests never leave the visitor's browser, nobody is alerted, and the console sign-in is a demo.
+  A real backend is a separate piece of work that needs a provider and credentials.
+- "Email (for a copy of your request)" on the form: no copy is sent until there is a backend.
+- "All reviews on Google" and the trust strip rating link go to `https://www.google.com/maps`, the placeholder in
+  `business.ts`, because the sample business has no profile.
+- A request sent from a service or area page records that page as its source but does not fill in the service or
+  suburb for the customer.
+
 ## Google Flow asset requests
 
 Save raw downloads to `media-src/flow/` (git-ignored) with the exact filenames below. I transcode them to

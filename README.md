@@ -43,6 +43,7 @@ The console demo login is shown on `/console/`. It uses `owner@demo.formandtrade
 3. Pick `theme: 'craft'` or `'precision'`.
 4. Production lead storage: write an `HttpLeadRepository` that implements `LeadRepository` (`src/lib/leads/repository.ts`). Return it from `getLeadRepository()` in `src/lib/leads/index.ts`. No form or console code changes.
 5. Wire owner alerts (SMS/email) on the server side of that repository. This is still open: the provider hasn't been chosen.
+6. Site address: canonical links, the sitemap, `robots.txt`, share images and structured data are built from `site` in `astro.config.mjs`. On Vercel it is taken from the project's production domain. On any other host, build with `SITE_URL=https://the-domain`. With neither, it falls back to `https://trades.reozix.com`, which only works once that domain exists.
 
 ## Demo limitations (by design)
 
