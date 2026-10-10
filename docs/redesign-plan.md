@@ -2,7 +2,8 @@
 
 Branch: `main` (one commit per task, nothing pushed). Both themes (`craft`, `precision`) are art-directed.
 Run tools with node directly (the `&` in the parent folder breaks npm's shims):
-`node node_modules/astro/astro.js build|check|preview` · `node node_modules/vitest/vitest.mjs run` · `node tests/e2e/smoke.mjs`.
+`node node_modules/astro/astro.js build|check|preview` · `node node_modules/vitest/vitest.mjs run` · `node tests/e2e/smoke.mjs <preview-url>`
+(set `BROWSER=firefox` or `webkit` for the other engines; run it against the built preview, not the dev server).
 
 ## Direction: "Site diary"
 
@@ -26,7 +27,7 @@ Rulings are decisions taken on the owner's behalf; each names its cost if wrong.
 
 - [x] A1 Safety net: e2e runs on Windows; slider, "nearby" checker and menu assertions
 - [x] A2 Tokens for both themes
-- [ ] A3 Self-hosted fonts, preload, metric-matched fallbacks (target CLS < 0.05)
+- [x] A3 Self-hosted fonts, preload, metric-matched fallbacks (measured CLS 0.000–0.010 on a throttled connection)
 - [x] A4 Primitives: Button, Badge, SectionHeading, Photo, global.css
 - [x] A5 Motion system: `src/styles/motion.css`, `src/scripts/motion.ts`
 - [x] A6 `Video.astro` + `video.ts` + `config/media.ts` (renders nothing video-related when the file is absent)
@@ -45,8 +46,9 @@ Rulings are decisions taken on the owner's behalf; each names its cost if wrong.
 - [x] B13 Sub-pages (PageHeader, all routes)
 - [x] C1 Media pipeline (`media-src/flow/` → `public/videos/`)
 - [ ] C2 Hero video · C3 Closing video · C4 Interlude (optional) · C5 Before/after pair (optional): **waiting on Flow files**
-- [ ] D1 Responsive pass · D2 Accessibility · D3 Performance + `og:image`
-- [ ] E1 Regression (Chromium, Firefox, WebKit) · E2 Polish + report
+- [x] D1 Responsive pass · D2 Accessibility · D3 Performance + `og:image`
+- [x] E1 Regression (Chromium, Firefox, WebKit: smoke 12/12 in each)
+- [ ] E2 Polish + report
 
 ### Rulings
 
@@ -67,6 +69,17 @@ Rulings are decisions taken on the owner's behalf; each names its cost if wrong.
 - **Latin subset fonts only.** All site copy is English. Cost if wrong: add the `latin-ext` files to `fonts.css`.
 - **Price table reads as a list below 640px.** A three-column table cut its last column off on phones. Cost if wrong:
   delete one media query.
+- **The hero's phone button is hidden below 480px.** The fixed call bar already shows the same number one thumb away,
+  and two phone buttons crowded the headline. Cost if wrong: delete one media query in `Hero.astro`.
+- **The video pause button sits top-right, under the header.** Bottom-right collided with the call bar on phones and
+  with the trust strip on desktop. Cost if wrong: one custom property (`--video-toggle-inset`).
+- **No loop cross-fade in `tools/media.mjs`.** It doubles the encode and softens the join; a take with matching
+  first and last frames loops cleanly without it. Cost if wrong: a visible jump every 8 s until a filter is added.
+- **Pressing "Send my request" with a mouse or finger does not move focus to the button.** Moving focus cleared the
+  edited field's error, the page shifted, and Safari dropped the tap. Keyboard focus is unchanged. Cost if wrong:
+  delete one line in `quote-form.ts`.
+- **The menu button takes focus before the menu opens.** Safari does not focus a clicked button, so the dialog had
+  nothing to hand focus back to on close. Cost if wrong: none known.
 
 ## Google Flow asset requests
 
@@ -104,7 +117,7 @@ the steadiest geometry and the calmest left side.
 - Avoid: any text, signage, logos, watermarks or captions; warped or bending timber; tools that morph; extra or fused
   fingers; distorted faces; additional workers; cranes or high-rise buildings; American-style houses, vinyl siding or
   basements; jump cuts; fast camera moves; lens flares; heavy filters; a CGI or video-game look; dust bursts.
-- Loop: I cross-fade the last 0.7 s into the first when transcoding, so a near-matching start and end is enough.
+- Loop: the clip is not cross-faded when transcoding, so keep the take whose first and last frames match most closely.
 
 ### FT-V2 · Closing call-to-action (essential; fallback exists)
 

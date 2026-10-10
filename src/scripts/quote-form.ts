@@ -65,6 +65,10 @@ function initQuoteForm(root: HTMLElement): void {
   });
 
   // ── Submit ────────────────────────────────────────────
+  // Pressing the button must not blur the field being edited: the blur clears that field's error, the page moves
+  // up under the pointer, and Safari (no scroll anchoring) drops the click. Submit validates every field anyway.
+  form.querySelector('button[type="submit"]')!.addEventListener('mousedown', (e) => e.preventDefault());
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     status.replaceChildren();

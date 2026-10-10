@@ -12,6 +12,8 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--header-height) + var(--space-md));
 }
+/* Keep keyboard focus clear of the fixed call bar on phones and tablets. */
+@media (max-width: 1023.98px) { html { scroll-padding-bottom: 5rem; } }
 /* The full-screen menu is a modal dialog; keep the page behind it still. */
 html:has(dialog[open]) { overflow: hidden; }
 

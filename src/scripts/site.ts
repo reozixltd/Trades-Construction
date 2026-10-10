@@ -17,15 +17,19 @@ if (header) {
   onScroll();
 }
 
-/* Mobile menu: a modal <dialog>, so focus trap, Escape and focus return are the browser's. */
+/* Mobile menu: a modal <dialog>, so the focus trap, Escape and the return of focus are the browser's. The toggle
+   is focused first because Safari does not focus a button on click, which leaves the dialog nowhere to return to. */
 const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
 const menu = document.querySelector<HTMLDialogElement>('[data-menu]');
 if (toggle && menu) {
   toggle.addEventListener('click', () => {
+    toggle.focus();
     menu.showModal();
     toggle.setAttribute('aria-expanded', 'true');
   });
   menu.querySelector('[data-menu-close]')?.addEventListener('click', () => menu.close());
-  menu.addEventListener('close', () => toggle.setAttribute('aria-expanded', 'false'));
+  menu.addEventListener('close', () => {
+    toggle.setAttribute('aria-expanded', 'false');
+  });
   matchMedia('(min-width: 1024px)').addEventListener('change', (e) => e.matches && menu.close());
 }

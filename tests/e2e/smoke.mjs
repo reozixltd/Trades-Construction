@@ -4,13 +4,14 @@
  * Covers the checklist's critical paths: licence on every page, sticky call bar,
  * step-1-only quote submission, lead appears in console, emergency toggle.
  */
-import { chromium } from 'playwright';
+import * as playwright from 'playwright';
 import assert from 'node:assert/strict';
 
 const BASE = process.argv[2] ?? 'http://localhost:4321';
 const PAGES = ['/', '/services/', '/services/repairs-and-maintenance/', '/areas/', '/areas/penrith/', '/projects/', '/about/', '/contact/', '/quote/', '/privacy/', '/terms/'];
 
-const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
+// BROWSER=firefox or webkit runs the same checks in another engine.
+const browser = await playwright[process.env.BROWSER ?? 'chromium'].launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
 const context = await browser.newContext({ viewport: { width: 375, height: 800 } });
 const page = await context.newPage();
 const errors = [];
