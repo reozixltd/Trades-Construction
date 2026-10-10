@@ -122,6 +122,26 @@ export const photoSlots = {
     search: 'Castle Hill Sydney houses, Hills District homes',
     orientation: 'landscape',
   },
+
+  /* Poster frames for background video (cut from the clips in public/videos/; see src/config/media.ts). */
+  'hero-poster': {
+    alt: 'Carpenter checking a timber wall frame with a spirit level',
+    brief: 'First frame of the hero video. Wide 16:9, subject on the right, calm darker left side for the headline.',
+    search: 'carpenter spirit level timber frame morning light',
+    orientation: 'landscape',
+  },
+  'cta-poster': {
+    alt: 'Hand oiling a hardwood benchtop in a joinery workshop',
+    brief: 'First frame of the closing video. Wide 16:9, dark left half.',
+    search: 'oiling timber benchtop workshop close up',
+    orientation: 'landscape',
+  },
+  'showcase-poster': {
+    alt: 'Renovated open-plan kitchen with a stone island and oak cabinetry',
+    brief: 'First frame of the kitchen interlude video. Wide 16:9.',
+    search: 'open plan kitchen stone island oak cabinetry',
+    orientation: 'landscape',
+  },
 } satisfies Record<string, PhotoSlot>;
 
 export type PhotoSlotName = keyof typeof photoSlots;

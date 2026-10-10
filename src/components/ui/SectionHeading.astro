@@ -1,5 +1,9 @@
 ---
-/** Eyebrow + heading + optional lead, with an optional slot for an aside (e.g. a link) on wide screens. */
+/**
+ * Section title block, laid out like the title strip of a drawing sheet: a rule across the
+ * top, the section's name in the margin, then the heading, lead and an optional aside
+ * (e.g. a link). On narrow screens the margin label stacks above the heading.
+ */
 interface Props {
   eyebrow?: string;
   title: string;
@@ -13,35 +17,47 @@ const Heading = level;
 ---
 
 <header class:list={['heading', `heading--${align}`]}>
-  <div class="heading__text">
-    {eyebrow && <p class="heading__eyebrow">{eyebrow}</p>}
+  <span class="heading__rule" data-reveal="line" aria-hidden="true"></span>
+  {eyebrow && <p class="heading__eyebrow" data-reveal>{eyebrow}</p>}
+  <div class="heading__text" data-reveal style="--i: 1">
     <Heading id={id}>{title}</Heading>
     {lead && <p class="heading__lead">{lead}</p>}
   </div>
-  {Astro.slots.has('default') && <div class="heading__aside"><slot /></div>}
+  {Astro.slots.has('default') && <div class="heading__aside" data-reveal style="--i: 2"><slot /></div>}
 </header>
 
 <style>
   .heading {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: var(--space-md) var(--space-xl);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-sm) var(--gutter);
     margin-bottom: var(--space-xl);
   }
-  .heading--center { justify-content: center; text-align: center; }
-  .heading--center .heading__lead { margin-inline: auto; }
-  .heading__text { max-width: 44rem; }
+  .heading__rule { grid-column: 1 / -1; height: 1px; margin-bottom: var(--space-xs); background: var(--color-line-strong); }
   .heading__eyebrow {
-    margin-bottom: var(--space-xs);
-    color: var(--color-accent-text);
+    display: flex; align-items: baseline; gap: var(--space-xs);
+    color: var(--color-text-muted);
     font-size: var(--text-label);
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
+    text-transform: var(--label-case);
   }
-  :global(.section--ink) .heading__eyebrow { color: var(--color-accent-line); }
-  .heading__lead { margin-top: var(--space-sm); max-width: 38rem; color: var(--color-text-muted); font-size: var(--text-body-lg); line-height: 1.55; }
-  :global(.section--ink) .heading__lead { color: var(--color-on-dark-muted); }
+  /* Survey peg: marks where the section is set out from. */
+  .heading__eyebrow::before { content: ''; flex-shrink: 0; width: 7px; height: 7px; background: var(--color-accent); transform: translateY(-1px); }
+  .heading__text { max-width: 46rem; }
+  .heading__lead { margin-top: var(--space-md); max-width: 36rem; color: var(--color-text-muted); font-size: var(--text-body-lg); line-height: 1.55; }
+  .heading__aside { align-self: end; }
+
+  .heading--center { justify-items: center; text-align: center; }
+  .heading--center .heading__rule { justify-self: stretch; }
+  .heading--center .heading__lead { margin-inline: auto; }
+
+  @media (min-width: 900px) {
+    /* The margin column is a fixed share of the row (see .indent), so headings line up whether or not there is an aside. */
+    .heading { grid-template-columns: calc((100% - 2 * var(--gutter)) * 2.4 / 9.4) minmax(0, 1fr) auto; margin-bottom: var(--space-2xl); }
+    .heading__text { grid-column: 2; }
+    .heading:not(:has(.heading__eyebrow)) .heading__text { grid-column: 1 / 3; }
+    .heading--center { grid-template-columns: minmax(0, 1fr); }
+    .heading--center .heading__text { grid-column: 1; }
+  }
 </style>

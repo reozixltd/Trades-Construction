@@ -1,0 +1,45 @@
+/*
+ * Self-hosted fonts (Fontsource, Latin subset). Only the active theme's files are
+ * downloaded; BaseLayout preloads them. The "Fallback" faces are system fonts scaled
+ * to the web font's width, so the swap doesn't move the layout.
+ */
+@font-face {
+  font-family: 'Besley';
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url('../../node_modules/@fontsource-variable/besley/files/besley-latin-wght-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('../../node_modules/@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Barlow Condensed';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../../node_modules/@fontsource/barlow-condensed/files/barlow-condensed-latin-500-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Barlow Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../../node_modules/@fontsource/barlow-condensed/files/barlow-condensed-latin-600-normal.woff2') format('woff2');
+}
+
+@font-face { font-family: 'Besley Fallback'; src: local('Georgia'); size-adjust: 108%; ascent-override: 90%; descent-override: 24%; line-gap-override: 0%; }
+@font-face { font-family: 'Jakarta Fallback'; src: local('Segoe UI'), local('Helvetica Neue'), local('Arial'); size-adjust: 105%; ascent-override: 96%; descent-override: 22%; line-gap-override: 0%; }
+@font-face { font-family: 'Inter Fallback'; src: local('Arial'); size-adjust: 107%; ascent-override: 90%; descent-override: 22%; line-gap-override: 0%; }
+@font-face { font-family: 'Barlow Fallback'; src: local('Arial Narrow'), local('Arial'); size-adjust: 84%; ascent-override: 110%; descent-override: 24%; line-gap-override: 0%; }

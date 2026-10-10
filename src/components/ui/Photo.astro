@@ -22,20 +22,27 @@ interface Props {
   label?: string;
   /** Small caption chip over the photo, e.g. "Before". */
   chip?: string;
+  /** Overrides the slot's alt text. Pass "" when the photo is a background behind text. */
+  alt?: string;
+  /** Motion (styles/motion.css): uncover the photo as it scrolls in; drift it inside its frame. */
+  reveal?: boolean;
+  parallax?: boolean;
   class?: string;
 }
 
-const { slot, ratio = '4 / 3', sizes = '(min-width: 1024px) 33vw, 100vw', priority = false, tone, label, chip, class: className } = Astro.props;
+const { slot, ratio = '4 / 3', sizes = '(min-width: 1024px) 33vw, 100vw', priority = false, tone, label, chip, alt, reveal = false, parallax = false, class: className } = Astro.props;
 const image = getPhoto(slot);
-const widths = [480, 800, 1200, 1600].filter((w) => !image || w <= image.width);
+const widths = [480, 800, 1200, 1600, 2000].filter((w) => !image || w <= image.width);
+/* Small originals: also offer the full-size file, so wide frames get every pixel there is. */
+if (image && image.width < 2000 && !widths.includes(image.width)) widths.push(image.width);
 ---
 
 {
   image ? (
-    <figure class:list={['photo', className]} style={`aspect-ratio: ${ratio}`}>
+    <figure class:list={['photo', className]} style={`aspect-ratio: ${ratio}`} data-reveal={reveal ? 'mask' : undefined} data-parallax={parallax ? '' : undefined}>
       <Picture
         src={image}
-        alt={photoAlt(slot)}
+        alt={alt ?? photoAlt(slot)}
         formats={['avif', 'webp']}
         widths={widths.length ? widths : [image.width]}
         sizes={sizes}
@@ -56,8 +63,8 @@ const widths = [480, 800, 1200, 1600].filter((w) => !image || w <= image.width);
   .photo :global(img) { object-fit: cover; }
   .photo__chip {
     position: absolute; left: var(--space-sm); bottom: var(--space-sm);
-    padding: 0.2rem 0.5rem; border-radius: var(--radius-sm);
+    padding: 0.25rem 0.6rem; border-radius: var(--radius-sm);
     background: var(--color-overlay-chip); color: var(--color-on-dark);
-    font-size: var(--text-label-sm); font-weight: 700; letter-spacing: var(--tracking-label-sm); text-transform: uppercase;
+    font-size: var(--text-label-sm); font-weight: 600; letter-spacing: var(--tracking-label-sm); line-height: 1.4;
   }
 </style>

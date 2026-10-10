@@ -1,4 +1,4 @@
-/** Site-wide behaviour, loaded on every page: live owner settings, call tracking, mobile menu. */
+/** Site-wide behaviour, loaded on every page: live owner settings, call tracking, header state, mobile menu. */
 import { applyLiveSettings } from './live-settings';
 import { track } from '@/lib/analytics';
 
@@ -9,20 +9,23 @@ document.addEventListener('click', (e) => {
   if (link) track('call_click');
 });
 
+/* Header: solid once the page has scrolled (only matters where it overlays a dark hero). */
+const header = document.querySelector<HTMLElement>('[data-header]');
+if (header) {
+  const onScroll = () => header.toggleAttribute('data-scrolled', scrollY > 96);
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+}
+
+/* Mobile menu: a modal <dialog>, so focus trap, Escape and focus return are the browser's. */
 const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
-const menu = document.querySelector<HTMLElement>('[data-menu]');
+const menu = document.querySelector<HTMLDialogElement>('[data-menu]');
 if (toggle && menu) {
   toggle.addEventListener('click', () => {
-    const open = toggle.getAttribute('aria-expanded') === 'true';
-    toggle.setAttribute('aria-expanded', String(!open));
-    menu.hidden = open;
-    toggle.querySelector('svg')?.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+    menu.showModal();
+    toggle.setAttribute('aria-expanded', 'true');
   });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !menu.hidden) {
-      menu.hidden = true;
-      toggle.setAttribute('aria-expanded', 'false');
-      toggle.focus();
-    }
-  });
+  menu.querySelector('[data-menu-close]')?.addEventListener('click', () => menu.close());
+  menu.addEventListener('close', () => toggle.setAttribute('aria-expanded', 'false'));
+  matchMedia('(min-width: 1024px)').addEventListener('change', (e) => e.matches && menu.close());
 }

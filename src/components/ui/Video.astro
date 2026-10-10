@@ -1,0 +1,59 @@
+---
+/**
+ * Full-bleed background media for a named clip (src/config/media.ts). Always renders the
+ * still (poster or fallback photo); adds the <video> only when the file exists at build time.
+ * Muted, inline, looped; loading and playback are handled in scripts/video.ts.
+ */
+import { resolveVideo } from '@/lib/media';
+import type { VideoName } from '@/config/media';
+import Photo from './Photo.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  name: VideoName;
+  /** Above the fold: the still is the LCP image. */
+  priority?: boolean;
+  sizes?: string;
+  parallax?: boolean;
+  class?: string;
+}
+const { name, priority = false, sizes = '100vw', parallax = false, class: className } = Astro.props;
+const { src, srcSmall, still } = resolveVideo(name);
+---
+
+<div class:list={['video', className]} data-video data-parallax={parallax ? '' : undefined}>
+  {still && <Photo slot={still} alt="" ratio="auto" sizes={sizes} priority={priority} class="video__still" />}
+  {
+    src && (
+      <>
+        <video muted loop playsinline preload="none" data-src={src} data-src-small={srcSmall} aria-hidden="true" tabindex="-1" disablepictureinpicture />
+        <button class="video__toggle" type="button" aria-pressed="false" hidden data-video-toggle>
+          <Icon name="pause" size={16} class="video__pause" />
+          <Icon name="play" size={16} class="video__play" />
+          <span class="visually-hidden" data-video-label>Pause background video</span>
+        </button>
+      </>
+    )
+  }
+</div>
+
+<style>
+  .video { position: absolute; inset: 0; overflow: hidden; background: var(--color-dark); }
+  .video :global(.video__still) { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 0; background: none; }
+  video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 900ms var(--ease-out); }
+  .video.is-playing video { opacity: 1; }
+  .video__toggle {
+    position: absolute; right: var(--page-margin); bottom: var(--space-lg); z-index: 3;
+    display: grid; place-items: center; width: var(--control-height); height: var(--control-height);
+    background: rgb(0 0 0 / 0.35); color: var(--color-on-dark);
+    border: 1px solid var(--color-line-dark); border-radius: var(--radius-full); backdrop-filter: blur(6px);
+  }
+  .video__toggle:hover { background: rgb(0 0 0 / 0.55); }
+  .video__toggle:focus-visible { box-shadow: var(--focus-ring-dark); border-radius: var(--radius-full); }
+  .video__toggle :global(.video__play), .video__toggle[aria-pressed='true'] :global(.video__pause) { display: none; }
+  .video__toggle[aria-pressed='true'] :global(.video__play) { display: block; }
+</style>
+
+<script>
+  import '@/scripts/video';
+</script>

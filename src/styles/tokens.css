@@ -2,73 +2,83 @@
  * Design tokens — the only place raw colour, type, space, radius and
  * shadow values live. Components use var(--…) only.
  *
- * Two themes come from the Stitch design systems:
- *   craft     → architectural_craft/DESIGN.md (default)
- *   precision → architectural_precision/DESIGN.md
- * Pick one with `theme` in src/config/business.ts.
+ * Two themes, picked with `theme` in src/config/business.ts:
+ *   craft     → limestone, ironbark and terracotta; Besley + Plus Jakarta Sans (default)
+ *   precision → concrete, graphite and safety amber; Barlow Condensed + Inter
  */
 
 :root,
 [data-theme='craft'] {
   /* Colour — structure */
-  --color-ink: #0f172a;          /* Deep Structural Slate */
-  --color-ink-hover: #1e293b;
-  --color-text: #0f172a;
-  --color-text-muted: #475569;   /* AA on canvas and surface */
-  --color-text-subtle: #64748b;  /* Mortar Slate — metadata only, ≥14px */
-  --color-canvas: #f8f9fa;       /* limestone ground */
-  --color-surface: #ffffff;
-  --color-inset: #f1f5f9;
-  --color-line: #e2e8f0;
-  --color-line-strong: #cbd5e1;
+  --color-ink: #1f1c18;          /* ironbark charcoal */
+  --color-ink-hover: #36312b;
+  --color-text: #1f1c18;
+  --color-text-muted: #5a534a;   /* AA on canvas, surface and inset */
+  --color-text-subtle: #696157;  /* metadata only, ≥13px */
+  --color-canvas: #f1eee8;       /* limestone ground */
+  --color-surface: #faf9f6;      /* paper */
+  --color-inset: #e6e1d7;        /* stone */
+  --color-line: #ddd7cb;
+  --color-line-strong: #c4bcad;
+  --color-sheet: #e3e8ea;        /* drafting-film band */
+  --color-linework: #5f7482;     /* blueprint line, decorative only */
+  --color-timber: #b08968;       /* decorative only */
+
+  /* Colour — dark sections */
+  --color-dark: #26221d;
+  --color-dark-raised: #312c26;
+  --color-line-dark: rgb(246 242 234 / 0.16);
+  --color-on-dark: #f6f2ea;
+  --color-on-dark-muted: #c9c1b4;
+  --color-accent-on-dark: #e8a27c; /* accent as text on dark: 7:1 */
 
   /* Colour — accent */
-  --color-accent: #c2410c;       /* Fired Terracotta */
+  --color-accent: #c2410c;       /* fired terracotta, from the logo */
   --color-accent-hover: #9a3412;
-  --color-accent-soft: #fff7ed;
-  --color-accent-line: #fed7aa;
-  --color-accent-text: #c2410c;  /* accent used as text: 5.2:1 on white */
+  --color-accent-soft: #f7e7dc;
+  --color-accent-line: #e9c3aa;
+  --color-accent-text: #a8380b;  /* accent used as text: 5.6:1 on canvas */
   --color-on-accent: #ffffff;
-  --color-warm: #d97706;         /* Tooling Amber */
+  --color-warm: #d97706;
 
   /* Colour — semantic */
   --color-success: #047857;
-  --color-success-soft: #ecfdf5;
-  --color-success-line: #a7f3d0;
-  --color-warning: #b45309;
-  --color-warning-soft: #fef3c7;
-  --color-warning-line: #fde68a;
-  --color-warning-ink: #78350f;
-  --color-danger: #b91c1c;       /* Red Iron — emergency */
-  --color-danger-soft: #fef2f2;
-  --color-danger-line: #fecaca;
+  --color-success-soft: #e7f3ec;
+  --color-success-line: #a7d7c0;
+  --color-warning: #a24b08;
+  --color-warning-soft: #fbefcf;
+  --color-warning-line: #ecd596;
+  --color-warning-ink: #6b3410;
+  --color-danger: #b91c1c;       /* emergency */
+  --color-danger-soft: #fbeceb;
+  --color-danger-line: #f0c2bf;
   --color-star: #fbbf24;
-  --color-star-ink: #b45309; /* stars on light backgrounds (AA) */
-  --color-overlay-chip: rgb(15 23 42 / 0.72);
-  --color-on-dark: #ffffff;
-  --color-on-dark-muted: #cbd5e1;
+  --color-star-ink: #a24b08;     /* stars on light backgrounds (AA) */
+  --color-overlay-chip: rgb(31 28 24 / 0.78);
 
   /* Type */
-  --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, monospace;
-  --display-weight: 700;
+  --font-display: 'Besley', 'Besley Fallback', Georgia, serif;
+  --font-body: 'Plus Jakarta Sans', 'Jakarta Fallback', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --display-weight: 500;
   --display-case: none;
 
-  --text-display: clamp(2.25rem, 1.35rem + 3.8vw, 3.5rem);   /* 36 → 56 */
-  --leading-display: 1.12;
-  --tracking-display: -0.03em;
-  --text-headline-lg: clamp(1.625rem, 1.3rem + 1.4vw, 2rem);  /* 26 → 32 */
+  --text-display: clamp(2.5rem, 1.35rem + 4.6vw, 4.75rem);    /* 40 → 76 */
+  --leading-display: 1.04;
+  --tracking-display: -0.022em;
+  --text-headline-xl: clamp(1.875rem, 1.3rem + 2.4vw, 3rem);  /* section titles 30 → 48 */
+  --text-headline-lg: clamp(1.625rem, 1.3rem + 1.4vw, 2.125rem);
   --text-headline-md: 1.5rem;
   --text-headline-sm: 1.25rem;
-  --text-title: 1rem;
+  --text-title: 1.0625rem;
   --text-body-lg: 1.125rem;
   --text-body: 0.9375rem;   /* 15px */
   --text-body-sm: 0.8125rem;
-  --text-label: 0.75rem;
-  --text-label-sm: 0.6875rem;
-  --tracking-label: 0.04em;
-  --tracking-label-sm: 0.06em;
+  --text-label: 0.8125rem;
+  --text-label-sm: 0.75rem;
+  --tracking-label: 0;
+  --tracking-label-sm: 0.01em;
+  --label-case: none;
 
   /* Space — 8pt rhythm */
   --space-2xs: 0.25rem;
@@ -79,62 +89,96 @@
   --space-xl: 2.5rem;
   --space-2xl: 4rem;
   --space-3xl: 6rem;
+  --space-section: clamp(4rem, 2.4rem + 7vw, 9rem);
   --gutter: 1rem;
-  --page-margin: 1rem;
-  --max-width: 80rem;
+  --page-margin: 1.25rem;
+  --max-width: 82rem;
 
   /* Shape */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
+  --radius-sm: 2px;
+  --radius-md: 4px;
   --radius-full: 9999px;
 
   /* Elevation */
-  --shadow-1: 0 1px 3px rgb(15 23 42 / 0.04), 0 1px 2px rgb(15 23 42 / 0.02);
-  --shadow-2: 0 8px 24px -4px rgb(15 23 42 / 0.08), 0 4px 8px -2px rgb(15 23 42 / 0.04);
-  --overlay: rgb(15 23 42 / 0.45);
+  --shadow-1: 0 1px 2px rgb(31 28 24 / 0.05);
+  --shadow-2: 0 18px 40px -12px rgb(31 28 24 / 0.22), 0 4px 10px -4px rgb(31 28 24 / 0.08);
+  --overlay: rgb(31 28 24 / 0.55);
 
   /* Controls */
   --control-height: 2.75rem;  /* 44px field-ready tap targets */
   --focus-ring: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-ink);
+  --focus-ring-dark: 0 0 0 2px var(--color-dark), 0 0 0 4px var(--color-on-dark);
   --header-height: 4.5rem;
-  --duration: 160ms;
+
+  /* Motion */
+  --duration: 180ms;
+  --duration-slow: 800ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 [data-theme='precision'] {
-  --color-canvas: #f8fafc;
-  --color-text-muted: #334155;
-  --color-accent: #ea580c;      /* Safety Amber — buttons use dark text below for AA */
-  --color-accent-hover: #f97316;  /* lighter on hover so slate text keeps AA */
-  --color-accent-soft: #fff7ed;
-  --color-accent-line: #ffedd5;
-  --color-accent-text: #c2410c;
-  --color-on-accent: #0f172a;    /* slate on amber passes AA; white does not */
-  --color-success: #15803d;
+  --color-ink: #14181c;          /* graphite */
+  --color-ink-hover: #2a3138;
+  --color-text: #14181c;
+  --color-text-muted: #414a52;
+  --color-text-subtle: #56606a;
+  --color-canvas: #eef0f1;       /* concrete */
+  --color-surface: #f9fafa;
+  --color-inset: #e0e4e6;
+  --color-line: #d3d8db;
+  --color-line-strong: #b4bcc1;
+  --color-sheet: #e2e7ea;
+  --color-linework: #5b6770;
+  --color-timber: #8d99a1;       /* steel */
 
-  --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
+  --color-dark: #1a1f24;
+  --color-dark-raised: #242a30;
+  --color-line-dark: rgb(243 245 246 / 0.16);
+  --color-on-dark: #f3f5f6;
+  --color-on-dark-muted: #b9c2c8;
+  --color-accent-on-dark: #fb923c;
+
+  --color-accent: #ea580c;       /* safety amber — buttons use dark text for AA */
+  --color-accent-hover: #f97316; /* lighter on hover so graphite text keeps AA */
+  --color-accent-soft: #fdeee2;
+  --color-accent-line: #f6cfb1;
+  --color-accent-text: #b6430a;
+  --color-on-accent: #14181c;    /* graphite on amber passes AA; white does not */
+  --color-success: #15803d;
+  --color-overlay-chip: rgb(20 24 28 / 0.8);
+
+  --font-display: 'Barlow Condensed', 'Barlow Fallback', 'Arial Narrow', sans-serif;
+  --font-body: 'Inter', 'Inter Fallback', system-ui, sans-serif;
   --display-weight: 600;
-  --tracking-display: -0.01em;
-  --leading-display: 1.05;
-  --text-display: clamp(2.5rem, 1.6rem + 3.8vw, 3.75rem);
-  --tracking-label: 0.06em;
-  --tracking-label-sm: 0.08em;
+  --display-case: uppercase;
+  --tracking-display: 0.002em;
+  --leading-display: 0.98;
+  --text-display: clamp(3rem, 1.5rem + 6vw, 6rem);
+  --text-headline-xl: clamp(2.25rem, 1.5rem + 3.2vw, 3.75rem);
+  --text-headline-lg: clamp(1.875rem, 1.4rem + 2vw, 2.5rem);
+  --text-headline-md: 1.75rem;
+  --text-headline-sm: 1.4375rem;
+  --text-title: 1.1875rem;
+  --radius-sm: 0;
+  --radius-md: 0;
   --shadow-1: none;
-  --shadow-2: 0 12px 32px -4px rgb(15 23 42 / 0.06), 0 4px 12px -2px rgb(15 23 42 / 0.03);
-  --focus-ring: 0 0 0 2px var(--color-surface), 0 0 0 4px #ea580c;
+  --shadow-2: 0 18px 40px -12px rgb(20 24 28 / 0.24);
+  --overlay: rgb(20 24 28 / 0.6);
+  --focus-ring: 0 0 0 2px var(--color-surface), 0 0 0 4px #c2410c;
+  --focus-ring-dark: 0 0 0 2px var(--color-dark), 0 0 0 4px var(--color-accent-on-dark);
 }
 
 @media (min-width: 768px) {
   :root {
-    --gutter: 1.25rem;
-    --page-margin: 2rem;
+    --gutter: 1.5rem;
+    --page-margin: 2.5rem;
     --header-height: 5rem;
   }
 }
 
 @media (min-width: 1200px) {
   :root {
-    --gutter: 1.5rem;
-    --page-margin: 2.5rem;
+    --gutter: 2rem;
+    --page-margin: 3.5rem;
   }
 }

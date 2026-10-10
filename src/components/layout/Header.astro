@@ -1,4 +1,9 @@
 ---
+/**
+ * Site header. Sticky; with `overlay` it sits transparent over a dark hero until the page
+ * scrolls (scripts/site.ts sets data-scrolled). Below 1024px the nav moves into a
+ * full-screen <dialog>, which gives focus trapping, Escape and focus return natively.
+ */
 import { business } from '@/config/business';
 import { primaryNav } from '@/config/navigation';
 import { telHref } from '@/lib/format';
@@ -6,11 +11,16 @@ import Logo from './Logo.astro';
 import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
 
+interface Props {
+  overlay?: boolean;
+}
+const { overlay = false } = Astro.props;
 const path = Astro.url.pathname;
 const isActive = (href: string) => path.startsWith(href);
+const tel = telHref(business.contact.phone);
 ---
 
-<header class="header">
+<header class:list={['header', { 'header--overlay': overlay }]} data-header>
   <div class="container header__inner">
     <Logo />
 
@@ -23,74 +33,138 @@ const isActive = (href: string) => path.startsWith(href);
     </nav>
 
     <div class="header__actions">
-      <a class="header__phone" href={telHref(business.contact.phone)}>
+      <a class="header__phone" href={tel}>
         <Icon name="phone" size={18} />
         <span class="header__phone-text">{business.contact.phone}</span>
         <span class="visually-hidden">Call us</span>
       </a>
       <Button href="/quote/" variant="accent" class="header__cta">Get a quote</Button>
-      <button class="header__toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle>
-        <Icon name="menu" size={22} label="Open menu" />
+      <button class="header__toggle" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle>
+        <span>Menu</span>
+        <Icon name="menu" size={20} />
       </button>
     </div>
   </div>
+</header>
 
-  <nav id="mobile-menu" class="mobile-menu" aria-label="Main" hidden data-menu>
-    <ul role="list" class="container">
-      {primaryNav.map((l) => (
-        <li><a href={l.href} aria-current={isActive(l.href) ? 'page' : undefined}>{l.label}<Icon name="arrowRight" size={18} /></a></li>
+<dialog id="mobile-menu" class="menu on-dark" aria-label="Menu" data-menu>
+  <div class="menu__bar container">
+    <Logo inverse />
+    <button class="menu__close" type="button" data-menu-close>
+      <span>Close</span>
+      <Icon name="close" size={20} />
+    </button>
+  </div>
+  <nav class="menu__nav container" aria-label="Main">
+    <ul role="list">
+      {primaryNav.map((l, i) => (
+        <li style={`--i: ${i}`}><a href={l.href} aria-current={isActive(l.href) ? 'page' : undefined}>{l.label}</a></li>
       ))}
-      <li><a href="/quote/">Get a quote<Icon name="arrowRight" size={18} /></a></li>
     </ul>
   </nav>
-</header>
+  <div class="menu__foot container">
+    <Button href="/quote/" variant="accent" size="lg" iconEnd="arrowRight" block>Get a quote</Button>
+    <Button href={tel} variant="on-dark" size="lg" icon="phone" block>{business.contact.phone}</Button>
+    <p class="menu__hours">{business.hours.map((h) => `${h.days} ${h.hours}`).join(' · ')}</p>
+  </div>
+</dialog>
 
 <style>
   .header {
     position: sticky;
     top: 0;
     z-index: 40;
-    background: rgb(255 255 255 / 0.92);
-    backdrop-filter: blur(12px);
+    background: color-mix(in srgb, var(--color-canvas) 90%, transparent);
+    backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--color-line);
+    transition: background-color 320ms var(--ease-out), border-color 320ms var(--ease-out), color 320ms var(--ease-out);
   }
   .header__inner { display: flex; align-items: center; gap: var(--space-md); height: var(--header-height); }
   .header__nav { display: none; margin-left: auto; }
-  .header__nav ul { display: flex; gap: var(--space-lg); }
-  .header__nav a { color: var(--color-text-muted); font-size: 0.875rem; font-weight: 600; text-decoration: none; padding-block: var(--space-xs); }
-  .header__nav a:hover, .header__nav a[aria-current] { color: var(--color-ink); }
-  .header__nav a[aria-current] { text-decoration: underline; text-decoration-color: var(--color-accent); text-decoration-thickness: 2px; text-underline-offset: 8px; }
+  .header__nav ul { display: flex; gap: var(--space-xl); }
+  .header__nav a {
+    position: relative; display: block; padding-block: var(--space-xs);
+    color: inherit; font-size: 0.9375rem; font-weight: 500; text-decoration: none;
+  }
+  /* String-line underline: drawn from the left on hover, held on the current page. */
+  .header__nav a::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+    background: var(--color-accent); transform: scaleX(0); transform-origin: left; transition: transform 320ms var(--ease-out);
+  }
+  .header__nav a[aria-current]::after { transform: none; }
+  @media (hover: hover) { .header__nav a:hover::after { transform: none; } }
+  .header__nav a:hover { color: inherit; }
 
   .header__actions { display: flex; align-items: center; gap: var(--space-xs); margin-left: auto; }
   .header__phone {
-    display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2xs);
+    display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs);
     min-width: var(--control-height); min-height: var(--control-height);
-    color: var(--color-ink); font-weight: 700; font-size: 0.875rem; text-decoration: none;
-    border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm);
+    color: inherit; font-weight: 600; font-size: 0.9375rem; text-decoration: none; font-variant-numeric: tabular-nums;
   }
+  .header__phone:hover { color: inherit; }
   .header__phone-text { display: none; }
   :global(.header__cta) { display: none !important; }
   .header__toggle {
-    display: inline-grid; place-items: center;
-    width: var(--control-height); height: var(--control-height);
-    background: none; border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm);
+    display: inline-flex; align-items: center; gap: var(--space-xs);
+    height: var(--control-height); padding-inline: var(--space-sm);
+    background: none; color: inherit; border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm);
+    font-size: 0.9375rem; font-weight: 600;
   }
 
-  .mobile-menu { border-top: 1px solid var(--color-line); background: var(--color-surface); }
-  .mobile-menu a {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: var(--space-md) 0; border-bottom: 1px solid var(--color-line);
-    font-family: var(--font-display); font-size: 1.125rem; font-weight: 600; text-decoration: none;
+  /* Over a dark hero: clear, light text, hairline only. Solid again once scrolled. */
+  .header--overlay:not([data-scrolled]) {
+    background: transparent; backdrop-filter: none; border-color: var(--color-line-dark); color: var(--color-on-dark);
+    --logo-fg: var(--color-on-dark); --logo-bg: var(--color-dark); --logo-sub: var(--color-on-dark-muted);
+    --color-line-strong: rgb(255 255 255 / 0.4);
+    --focus-ring: var(--focus-ring-dark);
   }
+  .header--overlay { margin-bottom: calc(-1 * var(--header-height) - 1px); }
 
   @media (min-width: 640px) {
-    .header__phone { padding-inline: var(--space-sm); border: 0; }
+    .header__phone { padding-inline: var(--space-sm); }
     .header__phone-text { display: inline; }
   }
   @media (min-width: 1024px) {
     .header__nav { display: block; }
-    .header__actions { margin-left: var(--space-lg); }
+    .header__actions { margin-left: var(--space-xl); gap: var(--space-sm); }
     :global(.header__cta) { display: inline-flex !important; }
-    .header__toggle, .mobile-menu { display: none !important; }
+    .header__toggle { display: none; }
   }
+
+  /* ── Full-screen menu ── */
+  .menu {
+    position: fixed; inset: 0; width: 100%; max-width: none; height: 100dvh; max-height: none;
+    margin: 0; padding: 0 0 calc(var(--space-lg) + env(safe-area-inset-bottom)); border: 0;
+    background: var(--color-dark);
+    opacity: 0;
+    transition: opacity 260ms var(--ease-out), display 260ms allow-discrete, overlay 260ms allow-discrete;
+  }
+  .menu[open] { display: flex; flex-direction: column; opacity: 1; }
+  @starting-style { .menu[open] { opacity: 0; } }
+  .menu::backdrop { background: var(--color-dark); }
+
+  .menu__bar { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; height: var(--header-height); border-bottom: 1px solid var(--color-line-dark); }
+  .menu__close {
+    display: inline-flex; align-items: center; gap: var(--space-xs);
+    height: var(--control-height); padding-inline: var(--space-sm);
+    background: none; color: inherit; border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm);
+    font-size: 0.9375rem; font-weight: 600;
+  }
+  .menu__nav { flex: 1; display: flex; align-items: center; overflow-y: auto; padding-block: var(--space-lg); }
+  .menu__nav ul { width: 100%; }
+  .menu__nav li { border-bottom: 1px solid var(--color-line-dark); }
+  .menu__nav a {
+    display: flex; align-items: center; min-height: 3.75rem; padding-block: var(--space-xs);
+    font-family: var(--font-display); font-size: clamp(1.75rem, 1.2rem + 3vw, 2.5rem); font-weight: var(--display-weight);
+    text-transform: var(--display-case); letter-spacing: var(--tracking-display); line-height: 1.1; text-decoration: none;
+  }
+  .menu__nav a[aria-current] { color: var(--color-accent-on-dark); }
+  .menu[open] .menu__nav li, .menu[open] .menu__foot {
+    opacity: 1; transform: none;
+    transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out);
+    transition-delay: calc(var(--i, 5) * 55ms + 90ms);
+  }
+  @starting-style { .menu[open] .menu__nav li, .menu[open] .menu__foot { opacity: 0; transform: translateY(1rem); } }
+  .menu__foot { display: grid; gap: var(--space-sm); flex-shrink: 0; }
+  .menu__hours { margin-top: var(--space-xs); color: var(--color-on-dark-muted); font-size: var(--text-body-sm); text-align: center; }
 </style>

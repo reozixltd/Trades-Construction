@@ -51,17 +51,19 @@ const rating = business.stats.find((s) => /rating/i.test(s.label));
 </section>
 
 <style>
-  .trust { background: var(--color-surface); border-block: 1px solid var(--color-line); }
+  /* Reads like the title block of a drawing: who is responsible, under which licence. */
+  .trust { background: var(--color-surface); border-bottom: 1px solid var(--color-line); }
   .trust__inner { display: grid; grid-template-columns: 1fr 1fr; }
   .trust__item {
     display: flex; gap: var(--space-sm); align-items: flex-start;
     padding: var(--space-md) var(--space-sm) var(--space-md) 0;
-    color: var(--color-ink); text-decoration: none;
+    color: var(--color-text); text-decoration: none;
   }
-  .trust__item :global(.icon) { margin-top: 2px; color: var(--color-accent-text); }
+  .trust__item :global(.icon) { margin-top: 2px; color: var(--color-linework); }
   .trust__item--licence { grid-column: 1 / -1; border-bottom: 1px solid var(--color-line); }
+  .trust__item--link:hover { color: var(--color-text); }
   .trust__item--link:hover .trust__value { text-decoration: underline; }
-  .trust__label { color: var(--color-text-muted); font-size: var(--text-label-sm); font-weight: 700; letter-spacing: var(--tracking-label-sm); text-transform: uppercase; }
+  .trust__label { color: var(--color-text-muted); font-size: var(--text-label-sm); font-weight: 500; letter-spacing: var(--tracking-label-sm); }
   .trust__value { font-weight: 700; font-size: 0.9375rem; line-height: 1.35; }
   .trust__meta { color: var(--color-text-muted); font-size: var(--text-body-sm); font-variant-numeric: tabular-nums; }
 

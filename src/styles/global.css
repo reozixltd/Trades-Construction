@@ -1,5 +1,7 @@
 /* Reset, base typography and layout primitives. Component styles live in their components. */
 @import './tokens.css';
+@import './fonts.css';
+@import './motion.css';
 
 *,
 *::before,
@@ -10,6 +12,8 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--header-height) + var(--space-md));
 }
+/* The full-screen menu is a modal dialog; keep the page behind it still. */
+html:has(dialog[open]) { overflow: hidden; }
 
 body {
   margin: 0;
@@ -26,18 +30,19 @@ img, svg, video { display: block; max-width: 100%; height: auto; }
 input, button, textarea, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
 p, h1, h2, h3, h4, figure, blockquote, dl, dd { margin: 0; }
-ul[role='list'], ol[role='list'] { list-style: none; margin: 0; padding: 0; }
+/* :where keeps this at zero specificity so layout classes (e.g. .container) can pad a list. */
+:where(ul, ol)[role='list'] { list-style: none; margin: 0; padding: 0; }
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
   font-weight: var(--display-weight);
   text-transform: var(--display-case);
-  line-height: 1.2;
-  letter-spacing: -0.015em;
+  line-height: 1.14;
+  letter-spacing: -0.012em;
   text-wrap: balance;
 }
 h1 { font-size: var(--text-display); line-height: var(--leading-display); letter-spacing: var(--tracking-display); }
-h2 { font-size: var(--text-headline-lg); letter-spacing: -0.02em; }
+h2 { font-size: var(--text-headline-xl); line-height: 1.06; letter-spacing: var(--tracking-display); }
 h3 { font-size: var(--text-headline-sm); }
 p { text-wrap: pretty; }
 
@@ -56,13 +61,22 @@ a:hover { color: var(--color-accent-text); }
   padding-inline: var(--page-margin);
 }
 
-.section { padding-block: var(--space-2xl); }
-.section--tight { padding-block: var(--space-xl); }
-.section--surface { background: var(--color-surface); border-block: 1px solid var(--color-line); }
-.section--ink { background: var(--color-ink); color: var(--color-on-dark); }
+.section { padding-block: var(--space-section); }
+.section--tight { padding-block: var(--space-2xl); }
+.section--surface { background: var(--color-surface); }
+.section--sheet { background: var(--color-sheet); }
+.section--ink { background: var(--color-dark); color: var(--color-on-dark); }
 
-@media (min-width: 768px) {
-  .section { padding-block: var(--space-3xl); }
+/* Anything set on a dark ground: text, links, muted copy and focus rings flip together. */
+.section--ink, .on-dark {
+  --color-text: var(--color-on-dark);
+  --color-text-muted: var(--color-on-dark-muted);
+  --color-text-subtle: var(--color-on-dark-muted);
+  --color-accent-text: var(--color-accent-on-dark);
+  --color-line: var(--color-line-dark);
+  --color-line-strong: rgb(246 242 234 / 0.34);
+  --focus-ring: var(--focus-ring-dark);
+  color: var(--color-on-dark);
 }
 
 .stack > * + * { margin-top: var(--stack-gap, var(--space-md)); }
@@ -77,14 +91,19 @@ a:hover { color: var(--color-accent-text); }
   font-size: var(--text-label);
   font-weight: 600;
   letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
+  text-transform: var(--label-case);
 }
 
 .muted { color: var(--color-text-muted); }
 
+/* Lines a block up with the heading column of SectionHeading (label | heading | aside). */
+@media (min-width: 900px) {
+  .indent { margin-left: calc((100% - 2 * var(--gutter)) * 2.4 / 9.4 + var(--gutter)); }
+}
+
 .prose { max-width: 68ch; }
 .prose > * + * { margin-top: var(--space-md); }
-.prose h2 { margin-top: var(--space-xl); font-size: var(--text-headline-md); }
+.prose h2 { margin-top: var(--space-xl); font-size: var(--text-headline-md); line-height: 1.15; letter-spacing: -0.012em; }
 .prose h3 { margin-top: var(--space-lg); }
 .prose ul { padding-left: 1.25rem; }
 .prose li + li { margin-top: var(--space-2xs); }
@@ -110,5 +129,5 @@ a:hover { color: var(--color-accent-text); }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }

@@ -9,6 +9,10 @@ import EmergencyBanner from '@/components/layout/EmergencyBanner.astro';
 import Header from '@/components/layout/Header.astro';
 import Footer from '@/components/layout/Footer.astro';
 import MobileCallBar from '@/components/layout/MobileCallBar.astro';
+import besley from '@fontsource-variable/besley/files/besley-latin-wght-normal.woff2?url';
+import jakarta from '@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2?url';
+import inter from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
+import barlow600 from '@fontsource/barlow-condensed/files/barlow-condensed-latin-600-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -17,14 +21,18 @@ interface Props {
   noindex?: boolean;
   /** Console and other app-like pages hide the marketing chrome. */
   bare?: boolean;
+  /** The page opens on a dark, full-bleed hero: the header sits over it, transparent until scrolled. */
+  overlayHeader?: boolean;
 }
 
-const { title, description, schema, noindex, bare = false } = Astro.props;
+const { title, description, schema, noindex, bare = false, overlayHeader = false } = Astro.props;
 
-const fonts: Record<typeof business.theme, string> = {
-  craft: 'family=Plus+Jakarta+Sans:wght@400;500;600;700;800',
-  precision: 'family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700',
+/* Preload only the active theme's fonts (declared in styles/fonts.css). */
+const preload: Record<typeof business.theme, string[]> = {
+  craft: [besley, jakarta],
+  precision: [barlow600, inter],
 };
+const themeColor: Record<typeof business.theme, string> = { craft: '#26221d', precision: '#1a1f24' };
 ---
 
 <!doctype html>
@@ -32,11 +40,18 @@ const fonts: Record<typeof business.theme, string> = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0f172a" />
+    <meta name="theme-color" content={themeColor[business.theme]} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?${fonts[business.theme]}&display=swap`} />
+    {preload[business.theme].map((href) => <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />)}
+    <!-- Scroll reveals hide content only when the script that reveals it can run; undone if it never arrives. -->
+    <script is:inline>
+      if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('has-motion');
+        setTimeout(function () {
+          if (!window.__motion) document.documentElement.classList.remove('has-motion');
+        }, 3000);
+      }
+    </script>
     <!-- Applies the owner's emergency setting before first paint (no banner flash). -->
     <script is:inline define:vars={{ settingsKey: SETTINGS_KEY }}>
       try {
@@ -50,12 +65,13 @@ const fonts: Record<typeof business.theme, string> = {
     <a class="skip-link" href="#main">Skip to content</a>
     {!bare && <DemoRibbon />}
     {!bare && <EmergencyBanner />}
-    {!bare && <Header />}
+    {!bare && <Header overlay={overlayHeader} />}
     <main id="main"><slot /></main>
     {!bare && <Footer />}
     {!bare && <MobileCallBar />}
     <script>
       import '@/scripts/site';
+      import '@/scripts/motion';
     </script>
   </body>
 </html>
