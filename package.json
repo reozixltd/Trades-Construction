@@ -10,7 +10,8 @@
     "check": "astro check",
     "test": "vitest run",
     "e2e": "node tests/e2e/smoke.mjs",
-    "photos:status": "node tools/photo-brief.mjs"
+    "photos:status": "node tools/photo-brief.mjs",
+    "media": "node tools/media.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

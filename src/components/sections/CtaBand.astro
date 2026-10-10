@@ -40,14 +40,14 @@ const {
     background: var(--color-dark); color: var(--color-on-dark);
     --focus-ring: var(--focus-ring-dark);
   }
-  .cta__media { position: absolute; inset: 0; z-index: -2; }
+  .cta__media { position: absolute; inset: 0; }
   .cta__shade {
-    position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    position: absolute; inset: 0; pointer-events: none;
     background:
       linear-gradient(90deg, color-mix(in srgb, var(--color-dark) 92%, transparent) 0%, color-mix(in srgb, var(--color-dark) 72%, transparent) 45%, color-mix(in srgb, var(--color-dark) 30%, transparent) 100%),
       linear-gradient(to top, color-mix(in srgb, var(--color-dark) 85%, transparent) 0%, transparent 60%);
   }
-  .cta__inner { display: grid; gap: var(--space-lg); }
+  .cta__inner { position: relative; display: grid; gap: var(--space-lg); }
   .cta__line { margin-bottom: var(--space-sm); }
   .cta h2 { max-width: 16ch; font-size: var(--text-display); line-height: var(--leading-display); }
   .cta p { margin-top: var(--space-lg); max-width: 36rem; color: var(--color-on-dark-muted); font-size: var(--text-body-lg); line-height: 1.55; }

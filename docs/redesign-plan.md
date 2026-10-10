@@ -29,7 +29,7 @@ Rulings are decisions taken on the owner's behalf; each names its cost if wrong.
 - [ ] A3 Self-hosted fonts, preload, metric-matched fallbacks (target CLS < 0.05)
 - [x] A4 Primitives: Button, Badge, SectionHeading, Photo, global.css
 - [x] A5 Motion system: `src/styles/motion.css`, `src/scripts/motion.ts`
-- [ ] A6 `Video.astro` + `video.ts` + `config/media.ts` (renders nothing video-related when the file is absent)
+- [x] A6 `Video.astro` + `video.ts` + `config/media.ts` (renders nothing video-related when the file is absent)
 - [x] B1 Header + full-screen mobile menu
 - [x] B2 Hero + trust strip
 - [x] B3 Services
@@ -43,7 +43,7 @@ Rulings are decisions taken on the owner's behalf; each names its cost if wrong.
 - [x] B11 FAQ
 - [x] B12 Closing CTA, footer, call bar
 - [x] B13 Sub-pages (PageHeader, all routes)
-- [ ] C1 Media pipeline (`media-src/flow/` → `public/videos/`)
+- [x] C1 Media pipeline (`media-src/flow/` → `public/videos/`)
 - [ ] C2 Hero video · C3 Closing video · C4 Interlude (optional) · C5 Before/after pair (optional): **waiting on Flow files**
 - [ ] D1 Responsive pass · D2 Accessibility · D3 Performance + `og:image`
 - [ ] E1 Regression (Chromium, Firefox, WebKit) · E2 Polish + report
