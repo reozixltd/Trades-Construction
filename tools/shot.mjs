@@ -1,7 +1,7 @@
 // Screenshot helper: node tools/shot.mjs <path> <width> <out.png> [fullPage=1]
 import { chromium } from 'playwright';
 const [, , path = '/', width = '375', out = 'shot.png', full = '1'] = process.argv;
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH ?? '/opt/pw-browsers/chromium' });
+const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
 const page = await browser.newPage({ viewport: { width: Number(width), height: 800 }, deviceScaleFactor: 1 });
 const errors = [];
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));

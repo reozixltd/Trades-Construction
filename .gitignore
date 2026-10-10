@@ -3,3 +3,5 @@ dist
 dist-static
 publish
 .astro
+media-src
+.superpowers

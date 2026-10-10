@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 const BASE = process.argv[2] ?? 'http://localhost:4321';
 const PAGES = ['/', '/services/', '/services/repairs-and-maintenance/', '/areas/', '/areas/penrith/', '/projects/', '/about/', '/contact/', '/quote/', '/privacy/', '/terms/'];
 
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH ?? '/opt/pw-browsers/chromium' });
+const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
 const context = await browser.newContext({ viewport: { width: 375, height: 800 } });
 const page = await context.newPage();
 const errors = [];
@@ -66,6 +66,38 @@ await step('suburb checker answers covered / not covered', async () => {
   await page.fill('#area-input', 'Wollongong');
   await page.click('[data-area-checker] button[type="submit"]');
   assert.match(await page.locator('[data-area-result]').innerText(), /outside our usual area/);
+});
+
+await step('suburb checker answers nearby and invalid', async () => {
+  await page.goto(BASE + '/areas/');
+  await page.fill('#area-input', 'Liverpool');
+  await page.click('[data-area-checker] button[type="submit"]');
+  assert.match(await page.locator('[data-area-result]').innerText(), /just outside our usual area/);
+  await page.fill('#area-input', '12');
+  await page.click('[data-area-checker] button[type="submit"]');
+  assert.match(await page.locator('[data-area-result]').innerText(), /4-digit postcode/);
+});
+
+await step('before/after slider moves with the keyboard and a click', async () => {
+  await page.goto(BASE + '/');
+  const cmp = page.locator('[data-compare]');
+  const pos = () => cmp.evaluate((e) => e.style.getPropertyValue('--pos'));
+  await page.focus('#compare-range');
+  await page.keyboard.press('ArrowRight');
+  assert.equal(await pos(), '51%');
+  await cmp.scrollIntoViewIfNeeded();
+  const box = await cmp.boundingBox();
+  await page.mouse.click(box.x + box.width * 0.2, box.y + box.height / 2);
+  assert.ok(parseFloat(await pos()) < 30, 'click near the left edge should move the divider left');
+});
+
+await step('mobile menu opens, closes on Escape and returns focus to the toggle', async () => {
+  await page.goto(BASE + '/');
+  await page.click('[data-menu-toggle]');
+  await page.locator('[data-menu] a[href="/services/"]').waitFor({ state: 'visible' });
+  await page.keyboard.press('Escape');
+  await page.locator('[data-menu] a[href="/services/"]').waitFor({ state: 'hidden' });
+  assert.equal(await page.evaluate(() => document.activeElement?.hasAttribute('data-menu-toggle')), true);
 });
 
 await step('quote form shows errors, then submits with step 1 only', async () => {
