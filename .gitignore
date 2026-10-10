@@ -5,3 +5,6 @@ publish
 .astro
 media-src
 .superpowers
+.env
+.env.*
+.vercel
