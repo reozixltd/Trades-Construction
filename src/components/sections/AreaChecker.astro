@@ -14,19 +14,18 @@ const tel = telHref(business.contact.phone);
 const areaData = JSON.stringify({ covered: business.areas.covered, nearby: business.areas.nearby });
 ---
 
-<section class:list={['section', { 'section--tight': compact }]} aria-labelledby="area-title">
-  <div class="container checker">
-    <div class="checker__intro">
+<section class:list={['section', 'section--sheet', { 'section--tight': compact }]} aria-labelledby="area-title">
+  <div class="container">
       <SectionHeading
         eyebrow="Service area"
         title="Do you cover my area?"
         lead={`We work across ${business.headline.area}. Type your suburb or postcode.`}
         id="area-title"
       />
-      <ServiceAreaMap />
-    </div>
+    <div class="checker">
+    <div class="checker__map" data-reveal><ServiceAreaMap /></div>
 
-    <div class="checker__box" data-area-checker data-areas={areaData}>
+    <div class="checker__box" data-area-checker data-areas={areaData} data-reveal style="--i: 1">
       <form class="checker__form" novalidate>
         <label for="area-input" class="checker__label">Suburb or postcode</label>
         <div class="checker__row">
@@ -37,7 +36,7 @@ const areaData = JSON.stringify({ covered: business.areas.covered, nearby: busin
       <div class="checker__result" role="status" aria-live="polite" data-area-result></div>
 
       <div hidden data-tpl="covered">
-        <p class="res res--yes"><strong>Yes, we cover <span data-slot="name"></span>.</strong> <a data-slot="link" hidden>See local jobs →</a></p>
+        <p class="res res--yes"><strong>Yes, we cover <span data-slot="name"></span>.</strong> <a data-slot="link" hidden>See local jobs</a></p>
         <p class="res__next"><a href="/quote/" data-slot="quote">Request a quote for this suburb</a></p>
       </div>
       <div hidden data-tpl="nearby">
@@ -61,6 +60,7 @@ const areaData = JSON.stringify({ covered: business.areas.covered, nearby: busin
         </ul>
       </details>
     </div>
+    </div>
   </div>
 </section>
 
@@ -68,24 +68,38 @@ const areaData = JSON.stringify({ covered: business.areas.covered, nearby: busin
 
 <style>
   .checker { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-lg); }
-  .checker__box { padding: var(--space-lg); background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md); box-shadow: var(--shadow-1); }
-  .checker__label { display: block; margin-bottom: var(--space-xs); font-size: var(--text-label); font-weight: 600; color: var(--color-text-muted); }
+  .checker__box { padding: var(--space-lg); background: var(--color-surface); border-radius: var(--radius-md); box-shadow: var(--shadow-2); }
+  .checker__label { display: block; margin-bottom: var(--space-xs); font-family: var(--font-display); font-size: var(--text-title); font-weight: var(--display-weight); text-transform: var(--display-case); }
   .checker__row { display: flex; gap: var(--space-xs); }
   .checker__row input {
-    flex: 1; min-width: 0; height: var(--control-height); padding: 0 var(--space-md);
+    flex: 1; min-width: 0; height: 3.25rem; padding: 0 var(--space-md);
     border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm); background: var(--color-surface); font-size: 1rem;
   }
+  .checker__row :global(.btn) { min-height: 3.25rem; }
   .checker__row input:focus { outline: none; border-color: var(--color-ink); box-shadow: 0 0 0 1px var(--color-ink); }
-  .checker__result:not(:empty) { margin-top: var(--space-md); padding: var(--space-md); border-radius: var(--radius-sm); background: var(--color-inset); }
+  /* The answer slides in under a rule in its status colour. */
+  .checker__result:not(:empty) { margin-top: var(--space-md); padding: var(--space-md); border-left: 3px solid var(--status, var(--color-line-strong)); background: var(--color-canvas); animation: checker-in 420ms var(--ease-out); }
+  .checker__result[data-status='covered'] { --status: var(--color-success); }
+  .checker__result[data-status='nearby'] { --status: var(--color-warning); }
+  .checker__result[data-status='not-covered'], .checker__result[data-status='invalid'] { --status: var(--color-danger); }
+  @keyframes checker-in { from { opacity: 0; transform: translateY(0.5rem); } }
   .checker__result :global(.res--yes strong) { color: var(--color-success); }
   .checker__result :global(.res--maybe strong) { color: var(--color-warning); }
   .checker__result :global(.res__next) { margin-top: var(--space-2xs); font-size: var(--text-body-sm); font-weight: 600; }
-  .checker__all { margin-top: var(--space-md); font-size: var(--text-body-sm); }
-  .checker__all summary { min-height: var(--control-height); display: flex; align-items: center; gap: var(--space-xs); font-weight: 600; cursor: pointer; list-style: none; }
+  .checker__all { margin-top: var(--space-md); font-size: var(--text-body-sm); border-top: 1px solid var(--color-line); }
+  .checker__all summary { min-height: var(--control-height); display: flex; align-items: center; justify-content: space-between; gap: var(--space-xs); font-weight: 600; cursor: pointer; list-style: none; }
   .checker__all summary::-webkit-details-marker { display: none; }
-  .checker__all summary::before { content: '+'; display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm); }
-  .checker__all[open] summary::before { content: '–'; }
-  .checker__all ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: var(--space-2xs) var(--space-md); padding-top: var(--space-xs); }
+  .checker__all summary::after {
+    content: ''; flex-shrink: 0; width: 0.75rem; height: 0.75rem;
+    background:
+      linear-gradient(currentColor, currentColor) center / 100% 1.5px no-repeat,
+      linear-gradient(currentColor, currentColor) center / 1.5px var(--bar, 100%) no-repeat;
+  }
+  .checker__all[open] summary::after { --bar: 0%; }
+  .checker__all ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: var(--space-2xs) var(--space-md); padding-block: var(--space-xs) var(--space-sm); }
   .checker__all span { color: var(--color-text-subtle); font-variant-numeric: tabular-nums; }
-  @media (min-width: 960px) { .checker { grid-template-columns: 1fr 1.2fr; align-items: start; gap: var(--space-2xl); } }
+  @media (min-width: 960px) {
+    .checker { grid-template-columns: 1.15fr 1fr; align-items: center; gap: calc(var(--gutter) * 2.5); }
+    .checker__box { padding: var(--space-xl); }
+  }
 </style>

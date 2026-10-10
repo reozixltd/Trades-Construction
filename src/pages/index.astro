@@ -14,6 +14,7 @@ import Reviews from '@/components/sections/Reviews.astro';
 import AreaChecker from '@/components/sections/AreaChecker.astro';
 import QuoteSection from '@/components/sections/QuoteSection.astro';
 import Faq from '@/components/sections/Faq.astro';
+import CtaBand from '@/components/sections/CtaBand.astro';
 import SectionHeading from '@/components/ui/SectionHeading.astro';
 import Button from '@/components/ui/Button.astro';
 
@@ -28,6 +29,7 @@ const schema = buildBusinessSchema(business, reviews.map((r) => r.data), Astro.s
   title={`${business.headline.trade} in ${business.headline.area} | ${business.tradingName}`}
   description={`Licensed builders, carpenters and repair trades across ${business.headline.area}. Fixed written quotes, photo quotes and fast repairs.`}
   schema={schema}
+  overlayHeader
 >
   <Hero />
   <TrustStrip />
@@ -35,7 +37,7 @@ const schema = buildBusinessSchema(business, reviews.map((r) => r.data), Astro.s
   <HowItWorks />
   {caseStudy && <CaseStudy project={caseStudy} />}
 
-  <section class="section section--surface" aria-labelledby="recent-title">
+  <section class="section" aria-labelledby="recent-title">
     <div class="container">
       <SectionHeading eyebrow="Recent work" title="Jobs we’ve finished lately" id="recent-title">
         <Button href="/projects/" variant="outline" iconEnd="arrowRight">All projects</Button>
@@ -49,4 +51,5 @@ const schema = buildBusinessSchema(business, reviews.map((r) => r.data), Astro.s
   <AreaChecker />
   <QuoteSection source="home" />
   <Faq />
+  <CtaBand title="Plan your project with us" />
 </BaseLayout>

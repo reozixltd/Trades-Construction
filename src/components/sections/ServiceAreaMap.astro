@@ -68,21 +68,23 @@ const label = (id: string) => {
 </figure>
 
 <style>
-  .map { margin: 0; padding: var(--space-md); background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md); }
+  .map { margin: 0; --map-ground: var(--color-sheet); }
   svg { width: 100%; height: auto; display: block; font-family: var(--font-body); }
   /* Opacity on the group, not each circle, so overlapping circles read as one even zone. */
-  .map__zone { opacity: 0.14; }
+  .map__zone { opacity: 0.16; }
   .map__zone circle { fill: var(--color-accent); stroke: none; }
   .map__pt circle { fill: var(--color-accent); }
-  .map__pt--major circle { stroke: var(--color-surface); stroke-width: 2; }
-  .map__pt text, .map__nearby text, .map__base text { font-size: 13px; font-weight: 600; fill: var(--color-text); paint-order: stroke; stroke: var(--color-surface); stroke-width: 4px; stroke-linejoin: round; }
-  .map__nearby circle { fill: var(--color-surface); stroke: var(--color-text-subtle); stroke-width: 1.5; stroke-dasharray: 2 2; }
+  .map__pt--major circle { stroke: var(--map-ground); stroke-width: 2; }
+  .map__pt text, .map__nearby text, .map__base text { font-size: 13px; font-weight: 600; fill: var(--color-text); paint-order: stroke; stroke: var(--map-ground); stroke-width: 4px; stroke-linejoin: round; }
+  /* The drawing scales down on phones; larger type in drawing units keeps the labels readable. */
+  @media (max-width: 600px) { .map__pt text, .map__nearby text, .map__base text { font-size: 19px; } }
+  .map__nearby circle { fill: var(--map-ground); stroke: var(--color-linework); stroke-width: 1.5; stroke-dasharray: 2 2; }
   .map__nearby text { fill: var(--color-text-muted); font-weight: 500; }
   .map__base rect { fill: var(--color-ink); }
   .map__key { display: flex; flex-wrap: wrap; gap: var(--space-md); margin-top: var(--space-xs); color: var(--color-text-muted); font-size: var(--text-body-sm); }
   .map__key span { display: inline-flex; align-items: center; gap: var(--space-2xs); }
   .key { display: inline-block; width: 12px; height: 12px; border-radius: 50%; }
   .key--zone { background: var(--color-accent); opacity: 0.35; }
-  .key--nearby { border: 1.5px dashed var(--color-text-subtle); }
+  .key--nearby { border: 1.5px dashed var(--color-linework); }
   .key--base { background: var(--color-ink); border-radius: 3px; }
 </style>

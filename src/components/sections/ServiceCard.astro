@@ -1,4 +1,5 @@
 ---
+/** One service as a large plate: photo, what it is, the two numbers people ask for, and what's included. */
 import type { CollectionEntry } from 'astro:content';
 import { formatAud } from '@/lib/format';
 import Icon from '../ui/Icon.astro';
@@ -15,50 +16,63 @@ const s = service.data;
 const slot = `service-${service.id}`;
 ---
 
-<article class="card">
-  {isPhotoSlot(slot) && <Photo slot={slot} ratio="16 / 10" sizes="(min-width: 1200px) 25vw, (min-width: 640px) 50vw, 100vw" class="card__photo" />}
-  <header class="card__head">
-    <p class="card__eyebrow">0{index + 1} // {s.eyebrow}</p>
-    <Icon name={s.icon} size={22} />
-  </header>
-  <h3 class="card__title"><a href={`/services/${service.id}/`}>{s.title}</a></h3>
-  <p class="card__summary">{s.summary}</p>
+<article class="card" data-reveal style={`--i: ${index % 2}`}>
+  {isPhotoSlot(slot) && (
+    <div class="card__media" data-tilt>
+      <Photo slot={slot} ratio="3 / 2" sizes="(min-width: 900px) 46vw, 100vw" class="card__photo" />
+    </div>
+  )}
+  <div class="card__body">
+    <p class="card__eyebrow">{s.eyebrow}</p>
+    <h3 class="card__title"><a href={`/services/${service.id}/`}>{s.title}</a></h3>
+    <p class="card__summary">{s.summary}</p>
 
-  <dl class="card__spec">
-    <div><dt>From</dt><dd>{formatAud(s.priceFrom)}{s.priceUnit && <span> {s.priceUnit}</span>}</dd></div>
-    <div><dt>Typical time</dt><dd>{s.typicalTime}</dd></div>
-  </dl>
+    <dl class="card__spec">
+      <div><dt>From</dt><dd>{formatAud(s.priceFrom)}{s.priceUnit && <span> {s.priceUnit}</span>}</dd></div>
+      <div><dt>Typical time</dt><dd>{s.typicalTime}</dd></div>
+    </dl>
 
-  <ul role="list" class="card__list">
-    {s.includes.slice(0, 3).map((item) => <li><Icon name="checkCircle" size={16} />{item}</li>)}
-  </ul>
+    <ul role="list" class="card__list">
+      {s.includes.slice(0, 3).map((item) => <li><Icon name="check" size={16} />{item}</li>)}
+    </ul>
 
-  <footer class="card__foot">
-    {s.emergency && <span data-live="emergency"><Badge tone="danger">24/7 make-safe</Badge></span>}
-    <a class="card__link" href={`/services/${service.id}/`}>Details & pricing<Icon name="arrowRight" size={16} /></a>
-  </footer>
+    <footer class="card__foot">
+      <a class="card__link" href={`/services/${service.id}/`} tabindex="-1" aria-hidden="true">Details & pricing<Icon name="arrowRight" size={16} /></a>
+      {s.emergency && <span data-live="emergency"><Badge tone="danger">24/7 make-safe</Badge></span>}
+    </footer>
+  </div>
 </article>
 
 <style>
-  .card { position: relative; display: flex; flex-direction: column; padding: var(--space-lg); background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md); box-shadow: var(--shadow-1); transition: border-color var(--duration); }
-  .card:hover { border-color: var(--color-line-strong); transform: translateY(-2px); box-shadow: var(--shadow-2); }
-  .card { transition: border-color 200ms, transform 200ms, box-shadow 200ms; }
-  .card :global(.card__photo) { margin: calc(-1 * var(--space-lg)) calc(-1 * var(--space-lg)) var(--space-md); border-radius: var(--radius-md) var(--radius-md) 0 0; }
-  .card__head { display: flex; justify-content: space-between; align-items: center; color: var(--color-text-subtle); }
-  .card__eyebrow { color: var(--color-accent-text); font-size: var(--text-label-sm); font-weight: 700; letter-spacing: var(--tracking-label-sm); text-transform: uppercase; }
-  .card__title { margin-top: var(--space-md); font-size: var(--text-headline-sm); }
+  .card { position: relative; display: flex; flex-direction: column; }
+  .card__media { overflow: hidden; border-radius: var(--radius-md); }
+  .card :global(.card__photo) { border-radius: 0; }
+  .card :global(.card__photo img) { transition: transform 1200ms var(--ease-out); }
+  @media (hover: hover) { .card:hover :global(.card__photo img) { transform: scale(1.04); } }
+
+  .card__body { display: flex; flex-direction: column; flex: 1; padding-top: var(--space-lg); }
+  .card__eyebrow { color: var(--color-text-muted); font-size: var(--text-label); font-weight: 600; }
+  .card__title { margin-top: var(--space-2xs); font-size: var(--text-headline-lg); line-height: 1.1; letter-spacing: var(--tracking-display); }
   .card__title a { text-decoration: none; }
-  .card__title a::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
-  .card__summary { margin-top: var(--space-xs); color: var(--color-text-muted); font-size: var(--text-body-sm); line-height: 1.55; }
-  .card__spec { margin: var(--space-md) 0 0; padding: var(--space-sm) 0; border-block: 1px solid var(--color-inset); font-size: var(--text-body-sm); }
-  .card__spec div { display: flex; justify-content: space-between; gap: var(--space-sm); padding-block: 2px; }
-  .card__spec dt { color: var(--color-text-subtle); font-size: var(--text-label-sm); font-weight: 700; letter-spacing: var(--tracking-label-sm); text-transform: uppercase; }
-  .card__spec dd { margin: 0; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
-  .card__spec dd span { color: var(--color-text-muted); font-weight: 500; }
+  .card__title a:hover { color: inherit; }
+  /* The title link covers the whole plate, so the card is one target. */
+  .card__title a::after { content: ''; position: absolute; inset: 0; }
+  .card__title a:focus-visible { box-shadow: none; }
+  .card__title a:focus-visible::after { box-shadow: var(--focus-ring); border-radius: var(--radius-md); }
+  .card__summary { margin-top: var(--space-sm); max-width: 34rem; color: var(--color-text-muted); line-height: 1.6; }
+
+  .card__spec { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gutter); margin: var(--space-lg) 0 0; padding-block: var(--space-md); border-block: 1px solid var(--color-line-strong); }
+  .card__spec dt { color: var(--color-text-muted); font-size: var(--text-label-sm); font-weight: 500; }
+  .card__spec dd { margin: 0; font-family: var(--font-display); font-size: var(--text-headline-sm); font-weight: var(--display-weight); text-transform: var(--display-case); line-height: 1.25; font-variant-numeric: tabular-nums; }
+  .card__spec dd span { font-family: var(--font-body); font-size: var(--text-body-sm); font-weight: 500; text-transform: none; color: var(--color-text-muted); }
+
   .card__list { margin-top: var(--space-md); font-size: var(--text-body-sm); }
   .card__list li { display: flex; gap: var(--space-xs); align-items: flex-start; }
   .card__list li + li { margin-top: var(--space-xs); }
-  .card__list :global(.icon) { margin-top: 3px; color: var(--color-success); }
+  .card__list :global(.icon) { margin-top: 3px; color: var(--color-accent-text); }
+
   .card__foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); margin-top: auto; padding-top: var(--space-lg); }
-  .card__link { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: var(--space-2xs); margin-left: auto; font-size: 0.875rem; font-weight: 700; text-decoration: none; }
+  .card__link { display: inline-flex; align-items: center; gap: var(--space-xs); font-weight: 600; text-decoration: underline; text-decoration-color: var(--color-accent); text-decoration-thickness: 1px; text-underline-offset: 0.4em; }
+  .card__link :global(.icon) { transition: transform var(--duration) var(--ease-out); }
+  @media (hover: hover) { .card:hover .card__link :global(.icon) { transform: translateX(4px); } }
 </style>

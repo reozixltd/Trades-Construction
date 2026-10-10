@@ -25,24 +25,24 @@ Motion: four behaviours only (reveal, image mask, line-draw, parallax), 600–90
 Rulings are decisions taken on the owner's behalf; each names its cost if wrong.
 
 - [x] A1 Safety net: e2e runs on Windows; slider, "nearby" checker and menu assertions
-- [ ] A2 Tokens for both themes
+- [x] A2 Tokens for both themes
 - [ ] A3 Self-hosted fonts, preload, metric-matched fallbacks (target CLS < 0.05)
-- [ ] A4 Primitives: Button, Badge, SectionHeading, Photo, global.css
-- [ ] A5 Motion system: `src/styles/motion.css`, `src/scripts/motion.ts`
+- [x] A4 Primitives: Button, Badge, SectionHeading, Photo, global.css
+- [x] A5 Motion system: `src/styles/motion.css`, `src/scripts/motion.ts`
 - [ ] A6 `Video.astro` + `video.ts` + `config/media.ts` (renders nothing video-related when the file is absent)
-- [ ] B1 Header + full-screen mobile menu
-- [ ] B2 Hero + trust strip
-- [ ] B3 Services
-- [ ] B4 Process
-- [ ] B5 Case study
-- [ ] B6 Recent projects (+ optional interlude)
-- [ ] B7 Pricing
-- [ ] B8 Reviews
-- [ ] B9 Area checker
-- [ ] B10 Quote form (styling only)
-- [ ] B11 FAQ
-- [ ] B12 Closing CTA, footer, call bar
-- [ ] B13 Sub-pages (PageHeader, all routes)
+- [x] B1 Header + full-screen mobile menu
+- [x] B2 Hero + trust strip
+- [x] B3 Services
+- [x] B4 Process
+- [x] B5 Case study
+- [x] B6 Recent projects (+ optional interlude)
+- [x] B7 Pricing
+- [x] B8 Reviews
+- [x] B9 Area checker
+- [x] B10 Quote form (styling only)
+- [x] B11 FAQ
+- [x] B12 Closing CTA, footer, call bar
+- [x] B13 Sub-pages (PageHeader, all routes)
 - [ ] C1 Media pipeline (`media-src/flow/` → `public/videos/`)
 - [ ] C2 Hero video · C3 Closing video · C4 Interlude (optional) · C5 Before/after pair (optional): **waiting on Flow files**
 - [ ] D1 Responsive pass · D2 Accessibility · D3 Performance + `og:image`
@@ -54,6 +54,19 @@ Rulings are decisions taken on the owner's behalf; each names its cost if wrong.
   specimen; Besley's Clarendon forms read as trade signwriting. Cost if wrong: one font package and one token.
 - **Three process steps kept.** The brief suggested four; the business config has three and a fourth would be invented copy.
 - **Project cards stay non-links.** There are no project detail pages; inventing them would be fake routes.
+- **A2–B13 landed as two commits, verified at the tip only.** The work was built as one pass across shared tokens, so
+  per-task commits would have been reconstructed after the fact. Cost if wrong: coarser `git bisect`.
+- **Header overlays the hero on the home page only.** Inner pages open on a light title band where a transparent header
+  has nothing to sit on. Cost if wrong: one prop on `BaseLayout`.
+- **Mobile menu is a native modal `<dialog>`.** Focus trap, Escape and focus return come from the browser instead of
+  script. Cost if wrong: browsers before 2022 show the menu without a backdrop.
+- **Hero headline has no coloured phrase; services and projects carry no numbering.** Accent colour is reserved for
+  conversion, and only the process (a real sequence) and the form steps are numbered. Cost if wrong: styling only.
+- **Reviews moved from a dark band to the page ground.** The case study above it is the one dark section mid-page; two
+  in a row flattened both. Cost if wrong: one section class.
+- **Latin subset fonts only.** All site copy is English. Cost if wrong: add the `latin-ext` files to `fonts.css`.
+- **Price table reads as a list below 640px.** A three-column table cut its last column off on phones. Cost if wrong:
+  delete one media query.
 
 ## Google Flow asset requests
 

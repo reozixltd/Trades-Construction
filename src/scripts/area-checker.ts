@@ -32,6 +32,7 @@ document.querySelectorAll<HTMLElement>('[data-area-checker]').forEach((root) => 
       a.href = sitePath(`/quote/?suburb=${encodeURIComponent(match?.suburb ?? input.value.trim())}`);
     });
 
+    output.dataset.status = result.status;
     output.replaceChildren(node);
   });
 });

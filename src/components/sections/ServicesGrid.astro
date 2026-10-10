@@ -17,8 +17,18 @@ const services = (await getCollection('services')).sort((a, b) => a.data.order -
 <section class="section" aria-labelledby="services-title">
   <div class="container">
     <SectionHeading eyebrow="What we do" title={title} lead={lead} id="services-title" />
-    <div class="grid" style="--grid-min: 15.5rem">
+    <div class="services">
       {services.map((s, i) => <ServiceCard service={s} index={i} />)}
     </div>
   </div>
 </section>
+
+<style>
+  .services { display: grid; gap: var(--space-2xl) var(--gutter); }
+  @media (min-width: 900px) {
+    /* The right-hand column sits lower, so the plates step down the page instead of forming a table.
+       Offset with `top` (not margin) so the rows keep their height; the padding makes room for it. */
+    .services { --step: var(--space-3xl); grid-template-columns: 1fr 1fr; gap: var(--space-3xl) calc(var(--gutter) * 2.5); padding-bottom: var(--step); }
+    .services > :global(:nth-child(even)) { top: var(--step); }
+  }
+</style>

@@ -19,12 +19,12 @@ import { business } from '@/config/business';
 </section>
 
 <style>
-  .stats { padding-block: var(--space-xl) 0; }
-  .stats__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-sm); margin: 0; }
-  .stats__tile { display: flex; flex-direction: column; padding: var(--space-md); background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md); }
-  .stats__label { order: 2; margin-top: var(--space-2xs); color: var(--color-text-muted); font-size: var(--text-label-sm); font-weight: 700; letter-spacing: var(--tracking-label-sm); text-transform: uppercase; }
+  .stats { padding-block: var(--space-2xl) 0; }
+  .stats__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-lg) var(--gutter); margin: 0; }
+  .stats__tile { display: flex; flex-direction: column; padding-top: var(--space-md); border-top: 1px solid var(--color-line-strong); }
+  .stats__label { order: 2; margin-top: var(--space-2xs); color: var(--color-text-muted); font-size: var(--text-label-sm); font-weight: 600; }
   .stats__value { order: 1; margin: 0; font-family: var(--font-display); font-size: var(--text-headline-lg); font-weight: var(--display-weight); letter-spacing: -0.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
   .stats__note { order: 3; margin: 0; color: var(--color-text-subtle); font-size: var(--text-body-sm); }
   .stats__sample { margin-top: var(--space-xs); color: var(--color-text-subtle); font-size: var(--text-body-sm); }
-  @media (min-width: 768px) { .stats__grid { grid-template-columns: repeat(4, 1fr); gap: var(--gutter); } .stats__tile { padding: var(--space-lg); } }
+  @media (min-width: 768px) { .stats__grid { grid-template-columns: repeat(4, 1fr); gap: var(--gutter); } }
 </style>

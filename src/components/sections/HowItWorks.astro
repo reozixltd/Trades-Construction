@@ -1,41 +1,53 @@
 ---
-/** Three-step conversion funnel (UI/UX Pro Max: Funnel pattern). Numbered because the order is real. */
+/** The quote process, set out along a string line. Numbered because the order is real. */
 import { processSteps } from '@/config/process';
 import SectionHeading from '../ui/SectionHeading.astro';
 import Icon from '../ui/Icon.astro';
 ---
 
-<section class="section section--surface" aria-labelledby="how-title">
+<section class="section section--sheet" aria-labelledby="how-title">
   <div class="container">
     <SectionHeading eyebrow="How it works" title="From first message to written quote" id="how-title" />
-    <ol role="list" class="steps">
-      {processSteps.map((s, i) => (
-        <li class="step">
-          <span class="step__n" aria-hidden="true">{i + 1}</span>
-          <h3 class="step__title"><span class="visually-hidden">Step {i + 1}: </span>{s.title}</h3>
-          <p class="step__text">{s.text}</p>
-          {s.cta && <a class="step__cta" href={s.cta.href}>{s.cta.label}<Icon name="arrowRight" size={16} /></a>}
-        </li>
-      ))}
-    </ol>
+    <div class="steps-wrap">
+      <span class="stringline steps__line" data-reveal="line" aria-hidden="true"></span>
+      <ol role="list" class="steps">
+        {processSteps.map((s, i) => (
+          <li class="step" data-reveal style={`--i: ${i + 1}`}>
+            <span class="step__n" aria-hidden="true">{i + 1}</span>
+            <h3 class="step__title"><span class="visually-hidden">Step {i + 1}: </span>{s.title}</h3>
+            <p class="step__text">{s.text}</p>
+            {s.cta && <a class="step__cta" href={s.cta.href}>{s.cta.label}<Icon name="arrowRight" size={16} /></a>}
+          </li>
+        ))}
+      </ol>
+    </div>
   </div>
 </section>
 
 <style>
-  .steps { display: grid; gap: var(--space-lg); counter-reset: step; }
-  .step { position: relative; padding-top: var(--space-xl); }
-  .step::before { content: ''; position: absolute; left: 0; right: 0; top: 1.05rem; height: 1px; background: var(--color-line-strong); }
-  .step:last-child::before { right: auto; width: 2.25rem; }
+  .steps-wrap { position: relative; }
+  .steps { display: grid; gap: var(--space-xl); }
+  .steps__line { display: none; }
+  .step { position: relative; padding-left: var(--space-xl); }
+  /* Phones: the line runs down the left edge, one peg per step. */
+  .step::before { content: ''; position: absolute; left: 3px; top: 0.6rem; bottom: calc(-1 * var(--space-xl)); width: 1px; background: var(--color-accent); }
+  .step:last-child::before { bottom: 0; }
+  .step::after { content: ''; position: absolute; left: 0; top: 0.6rem; width: 7px; height: 7px; background: var(--color-accent); }
   .step__n {
-    position: absolute; top: 0; left: 0; display: grid; place-items: center;
-    width: 2.25rem; height: 2.25rem; border-radius: 50%;
-    background: var(--color-ink); color: var(--color-on-dark);
-    font-family: var(--font-display); font-weight: 700; font-variant-numeric: tabular-nums;
+    display: block; color: var(--color-linework);
+    font-family: var(--font-display); font-size: clamp(3rem, 2.2rem + 3vw, 4.5rem); font-weight: var(--display-weight); line-height: 0.9; font-variant-numeric: lining-nums;
   }
-  .step:first-child .step__n { background: var(--color-accent); color: var(--color-on-accent); }
-  .step__title { margin-top: var(--space-sm); font-size: var(--text-headline-sm); }
-  .step__text { margin-top: var(--space-xs); color: var(--color-text-muted); max-width: 34ch; }
-  .step__cta { display: inline-flex; align-items: center; gap: var(--space-2xs); min-height: var(--control-height); margin-top: var(--space-xs); font-weight: 700; text-decoration: none; color: var(--color-accent-text); }
-  @media (max-width: 767px) { .step::before { display: none; } }
-  @media (min-width: 768px) { .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-xl); } }
+  .step__title { margin-top: var(--space-md); font-size: var(--text-headline-md); line-height: 1.15; }
+  .step__text { margin-top: var(--space-sm); color: var(--color-text-muted); max-width: 36ch; line-height: 1.6; }
+  .step__cta { display: inline-flex; align-items: center; gap: var(--space-xs); min-height: var(--control-height); margin-top: var(--space-xs); font-weight: 600; text-decoration: underline; text-decoration-color: var(--color-accent); text-decoration-thickness: 1px; text-underline-offset: 0.4em; }
+  .step__cta :global(.icon) { transition: transform var(--duration) var(--ease-out); }
+  @media (hover: hover) { .step__cta:hover :global(.icon) { transform: translateX(4px); } }
+
+  @media (min-width: 768px) {
+    .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: calc(var(--gutter) * 2); }
+    .steps__line { display: block; }
+    .step { padding: var(--space-xl) 0 0; }
+    .step::before { display: none; }
+    .step::after { top: -4px; }
+  }
 </style>

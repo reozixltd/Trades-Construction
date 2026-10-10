@@ -125,7 +125,7 @@ const areaData = JSON.stringify({ covered: business.areas.covered, nearby: busin
 <script>import '@/scripts/quote-form';</script>
 
 <style>
-  .quote { background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md); box-shadow: var(--shadow-1); }
+  .quote { background: var(--color-surface); border-top: 2px solid var(--color-ink); border-radius: 0 0 var(--radius-md) var(--radius-md); box-shadow: var(--shadow-2); }
   .quote__form { padding: var(--space-lg); }
   .summary { margin-bottom: var(--space-lg); padding: var(--space-md); border: 1px solid var(--color-danger-line); border-left: 4px solid var(--color-danger); border-radius: var(--radius-sm); background: var(--color-danger-soft); }
   .summary:focus { outline: none; box-shadow: var(--focus-ring); }
@@ -135,20 +135,25 @@ const areaData = JSON.stringify({ covered: business.areas.covered, nearby: busin
   .quote__form :global(button[aria-busy='true']) { cursor: progress; opacity: 0.8; }
   .quote__step { display: grid; gap: var(--space-md); margin: 0; padding: 0; border: 0; }
   .quote__step--two { padding-top: var(--space-md); }
-  .quote__legend { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs); padding: 0; margin-bottom: var(--space-xs); font-family: var(--font-display); font-size: var(--text-title); font-weight: 700; }
+  .quote__legend { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs); padding: 0; margin-bottom: var(--space-xs); font-family: var(--font-display); font-size: var(--text-headline-sm); font-weight: var(--display-weight); text-transform: var(--display-case); }
   .quote__num { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: var(--radius-sm); background: var(--color-ink); color: var(--color-on-dark); font-family: var(--font-body); font-size: var(--text-label); }
-  .quote__tag { font-family: var(--font-body); font-size: var(--text-label-sm); font-weight: 700; letter-spacing: var(--tracking-label-sm); text-transform: uppercase; color: var(--color-text-subtle); }
+  .quote__tag { font-family: var(--font-body); font-size: var(--text-label-sm); font-weight: 500; letter-spacing: var(--tracking-label-sm); text-transform: none; color: var(--color-text-subtle); }
   .quote__more { margin-top: var(--space-lg); padding-top: var(--space-md); border-top: 1px solid var(--color-line); }
   .quote__more summary { display: flex; align-items: center; justify-content: space-between; min-height: var(--control-height); cursor: pointer; list-style: none; }
   .quote__more summary::-webkit-details-marker { display: none; }
-  .quote__more summary::after { content: '+'; display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm); }
-  .quote__more[open] summary::after { content: '–'; }
+  .quote__more summary::after {
+    content: ''; flex-shrink: 0; width: 0.875rem; height: 0.875rem;
+    background:
+      linear-gradient(currentColor, currentColor) center / 100% 1.5px no-repeat,
+      linear-gradient(currentColor, currentColor) center / 1.5px var(--bar, 100%) no-repeat;
+  }
+  .quote__more[open] summary::after { --bar: 0%; }
   .quote__more summary .quote__legend { margin: 0; }
 
   .field { display: grid; gap: var(--space-2xs); min-width: 0; }
-  .field label, .field legend { font-size: var(--text-label); font-weight: 600; color: var(--color-text-muted); }
+  .field label, .field legend { font-size: var(--text-label); font-weight: 600; color: var(--color-text); }
   .field input, .field select, .field textarea {
-    width: 100%; min-height: var(--control-height); padding: var(--space-xs) var(--space-sm);
+    width: 100%; min-height: 3rem; padding: var(--space-xs) var(--space-sm);
     background: var(--color-surface); border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm);
     font-size: 1rem; /* 16px stops iOS zoom */
   }
@@ -164,10 +169,11 @@ const areaData = JSON.stringify({ covered: business.areas.covered, nearby: busin
   .chips legend { margin-bottom: var(--space-2xs); }
   .chip { position: relative; }
   .chip input { position: absolute; opacity: 0; inset: 0; }
-  .chip span { display: inline-flex; align-items: center; min-height: var(--control-height); padding: 0 var(--space-md); border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm); font-size: var(--text-body-sm); font-weight: 600; cursor: pointer; }
+  .chip span { display: inline-flex; align-items: center; min-height: var(--control-height); padding: 0 var(--space-md); border: 1px solid var(--color-line-strong); border-radius: var(--radius-full); font-size: var(--text-body-sm); font-weight: 600; cursor: pointer; transition: background-color var(--duration), border-color var(--duration), color var(--duration); }
   .chip input:checked + span { background: var(--color-ink); border-color: var(--color-ink); color: var(--color-on-dark); }
   .chip--danger input:checked + span { background: var(--color-danger); border-color: var(--color-danger); }
   .chip input:focus-visible + span { box-shadow: var(--focus-ring); }
+  @media (hover: hover) { .chip span:hover { border-color: var(--color-ink); } }
 
   .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 

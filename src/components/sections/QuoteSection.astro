@@ -20,10 +20,11 @@ const points = [
 const review = (await getCollection('reviews')).map((r) => r.data).sort((a, b) => b.rating - a.rating)[0];
 ---
 
-<section class="section section--surface" id="quote" aria-labelledby="quote-title">
-  <div class="container qs">
-    <div>
+<section class="section" id="quote" aria-labelledby="quote-title">
+  <div class="container">
       <SectionHeading eyebrow="Free quote" title={title} lead="Three details are enough to start. Photos and the rest are optional." id="quote-title" />
+  <div class="qs">
+    <div data-reveal>
       <ul role="list" class="qs__points">
         {points.map((p) => <li><Icon name={p.icon} size={20} />{p.text}</li>)}
       </ul>
@@ -36,18 +37,22 @@ const review = (await getCollection('reviews')).map((r) => r.data).sort((a, b) =
       )}
       <p class="qs__call">Rather talk? <a href={telHref(business.contact.phone)}>{business.contact.phone}</a></p>
     </div>
-    <QuoteForm source={source} />
+    <div data-reveal style="--i: 1"><QuoteForm source={source} /></div>
+  </div>
   </div>
 </section>
 
 <style>
   .qs { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xl); }
-  .qs__points li { display: flex; gap: var(--space-sm); align-items: flex-start; padding-block: var(--space-sm); border-bottom: 1px solid var(--color-inset); color: var(--color-text-muted); }
+  .qs__points { border-top: 1px solid var(--color-line-strong); }
+  .qs__points li { display: flex; gap: var(--space-sm); align-items: flex-start; padding-block: var(--space-md); border-bottom: 1px solid var(--color-line); color: var(--color-text-muted); }
   .qs__points :global(.icon) { color: var(--color-accent-text); }
   .qs__call { margin-top: var(--space-lg); font-weight: 600; }
-  .qs__review { margin: var(--space-lg) 0 0; padding: var(--space-md) var(--space-lg); background: var(--color-canvas); border-left: 3px solid var(--color-accent); border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+  .qs__review { margin: var(--space-xl) 0 0; padding-left: var(--space-lg); border-left: 1px solid var(--color-accent); }
+  .qs__review blockquote { font-family: var(--font-display); font-size: var(--text-title); line-height: 1.5; }
+  :global([data-theme='precision']) .qs__review blockquote { font-family: var(--font-body); }
   .qs__stars { color: var(--color-star-ink); letter-spacing: 2px; }
   .qs__review blockquote { margin: var(--space-2xs) 0; }
   .qs__review figcaption { color: var(--color-text-muted); font-size: var(--text-body-sm); }
-  @media (min-width: 960px) { .qs { grid-template-columns: 0.8fr 1.2fr; gap: var(--space-2xl); align-items: start; } }
+  @media (min-width: 960px) { .qs { grid-template-columns: 0.8fr 1.2fr; gap: calc(var(--gutter) * 2.5); align-items: start; } }
 </style>

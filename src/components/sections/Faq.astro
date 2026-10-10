@@ -21,7 +21,7 @@ const schema = {
 <section class:list={['section', { 'section--surface': surface }]} aria-labelledby="faq-title">
   <div class="container faq">
     <SectionHeading eyebrow="FAQ" title={title} id="faq-title" />
-    <div class="faq__list">
+    <div class="faq__list indent" data-reveal>
       {faqs.map((f) => (
         <details>
           <summary>{f.q}</summary>
@@ -34,17 +34,34 @@ const schema = {
 </section>
 
 <style>
-  .faq { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: var(--space-lg); }
-  .faq__list { border-top: 1px solid var(--color-line); }
-  details { border-bottom: 1px solid var(--color-line); }
+  .faq { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .faq__list { border-top: 1px solid var(--color-line-strong); }
+  details { border-bottom: 1px solid var(--color-line-strong); }
   summary {
     display: flex; justify-content: space-between; align-items: center; gap: var(--space-md);
-    min-height: var(--control-height); padding-block: var(--space-md);
-    font-weight: 700; cursor: pointer; list-style: none;
+    min-height: 4rem; padding-block: var(--space-md);
+    font-family: var(--font-display); font-size: var(--text-title); font-weight: var(--display-weight); text-transform: var(--display-case); line-height: 1.3;
+    cursor: pointer; list-style: none;
   }
   summary::-webkit-details-marker { display: none; }
-  summary::after { content: '+'; flex-shrink: 0; display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm); font-weight: 500; transition: transform var(--duration); }
-  details[open] summary::after { content: '–'; }
-  details p { padding-bottom: var(--space-md); max-width: 62ch; color: var(--color-text-muted); }
-  @media (min-width: 960px) { .faq { grid-template-columns: 1fr 2fr; gap: var(--space-2xl); } }
+  /* Plus that turns to a minus: the upright stroke lies down when the answer opens. */
+  summary::after {
+    content: ''; flex-shrink: 0; width: 0.875rem; height: 0.875rem;
+    background:
+      linear-gradient(currentColor, currentColor) center / 100% 1.5px no-repeat,
+      linear-gradient(currentColor, currentColor) center / 1.5px var(--bar, 100%) no-repeat;
+    transition: transform 320ms var(--ease-out);
+  }
+  details[open] summary::after { --bar: 0%; transform: rotate(180deg); }
+  @media (hover: hover) { summary:hover { color: var(--color-accent-text); } }
+  details p { padding-bottom: var(--space-lg); max-width: 62ch; color: var(--color-text-muted); line-height: 1.65; }
+
+  /* Open and close smoothly where the browser can animate to height: auto. */
+  @supports (interpolate-size: allow-keywords) {
+    @media (prefers-reduced-motion: no-preference) {
+      details { interpolate-size: allow-keywords; }
+      details::details-content { height: 0; overflow: clip; transition: height 360ms var(--ease-out), content-visibility 360ms allow-discrete; }
+      details[open]::details-content { height: auto; }
+    }
+  }
 </style>

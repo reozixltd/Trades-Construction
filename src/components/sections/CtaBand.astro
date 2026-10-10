@@ -1,7 +1,9 @@
 ---
+/** Closing call to action over the workshop clip (or its still). One decision: quote or call. */
 import { business } from '@/config/business';
 import { telHref } from '@/lib/format';
 import Button from '../ui/Button.astro';
+import Video from '../ui/Video.astro';
 
 interface Props {
   title?: string;
@@ -14,12 +16,15 @@ const {
 ---
 
 <section class="cta">
+  <div class="cta__media"><Video name="cta" parallax sizes="100vw" /></div>
+  <div class="cta__shade" aria-hidden="true"></div>
   <div class="container cta__inner">
-    <div>
+    <span class="stringline cta__line" data-reveal="line" aria-hidden="true"></span>
+    <div class="cta__copy" data-reveal style="--i: 1">
       <h2>{title}</h2>
       <p>{text} <span data-live="callback">{business.defaults.callbackPromise}</span></p>
     </div>
-    <div class="cta__actions">
+    <div class="cta__actions" data-reveal style="--i: 2">
       <Button href="/quote/" variant="accent" size="lg" iconEnd="arrowRight">Get a quote</Button>
       <Button href={telHref(business.contact.phone)} variant="on-dark" size="lg" icon="phone">{business.contact.phone}</Button>
     </div>
@@ -27,9 +32,29 @@ const {
 </section>
 
 <style>
-  .cta { padding-block: var(--space-2xl); background: var(--color-ink); color: var(--color-on-dark); border-bottom: 1px solid rgb(255 255 255 / 0.1); }
-  .cta__inner { display: grid; gap: var(--space-lg); align-items: center; }
-  .cta p { margin-top: var(--space-xs); max-width: 40rem; color: var(--color-on-dark-muted); }
-  .cta__actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
-  @media (min-width: 900px) { .cta__inner { grid-template-columns: 1fr auto; } }
+  .cta {
+    position: relative; isolation: isolate; overflow: hidden;
+    display: flex; align-items: flex-end;
+    min-height: clamp(26rem, 70svh, 40rem);
+    padding-block: var(--space-section) var(--space-2xl);
+    background: var(--color-dark); color: var(--color-on-dark);
+    --focus-ring: var(--focus-ring-dark);
+  }
+  .cta__media { position: absolute; inset: 0; z-index: -2; }
+  .cta__shade {
+    position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      linear-gradient(90deg, color-mix(in srgb, var(--color-dark) 92%, transparent) 0%, color-mix(in srgb, var(--color-dark) 72%, transparent) 45%, color-mix(in srgb, var(--color-dark) 30%, transparent) 100%),
+      linear-gradient(to top, color-mix(in srgb, var(--color-dark) 85%, transparent) 0%, transparent 60%);
+  }
+  .cta__inner { display: grid; gap: var(--space-lg); }
+  .cta__line { margin-bottom: var(--space-sm); }
+  .cta h2 { max-width: 16ch; font-size: var(--text-display); line-height: var(--leading-display); }
+  .cta p { margin-top: var(--space-lg); max-width: 36rem; color: var(--color-on-dark-muted); font-size: var(--text-body-lg); line-height: 1.55; }
+  .cta__actions { display: grid; gap: var(--space-sm); }
+  @media (min-width: 480px) { .cta__actions { display: flex; flex-wrap: wrap; } }
+  @media (min-width: 1000px) {
+    .cta__inner { grid-template-columns: 1fr auto; align-items: end; }
+    .cta__line { grid-column: 1 / -1; }
+  }
 </style>

@@ -11,7 +11,7 @@ const reviews = await getCollection('reviews');
 
 {
   reviews.length > 0 && (
-    <section class="section section--ink" aria-labelledby="reviews-title">
+    <section class="section reviews" aria-labelledby="reviews-title">
       <div class="container">
         <SectionHeading
           eyebrow={business.demoMode ? 'Reviews (sample)' : 'Reviews'}
@@ -19,14 +19,14 @@ const reviews = await getCollection('reviews');
           lead={business.demoMode ? 'Sample reviews for a fictional business. A live site shows the client’s real Google reviews.' : 'A selection of reviews from our Google Business Profile.'}
           id="reviews-title"
         >
-          <Button href={business.social.googleReviewsUrl} variant="on-dark" iconEnd="arrowUpRight" rel="noopener">
+          <Button href={business.social.googleReviewsUrl} variant="outline" iconEnd="arrowUpRight" rel="noopener">
             All reviews on Google
           </Button>
         </SectionHeading>
 
-        <div class="grid" style="--grid-min: 16rem">
-          {reviews.map(({ data: r }) => (
-            <figure class="review">
+        <div class="reviews__grid">
+          {reviews.map(({ data: r }, i) => (
+            <figure class="review" data-reveal style={`--i: ${i % 4}`}>
               <p class="review__stars" role="img" aria-label={`${r.rating} out of 5 stars`}>
                 {Array.from({ length: 5 }, (_, i) => (
                   <span class:list={{ off: i >= r.rating }}><Icon name="star" size={16} /></span>
@@ -47,13 +47,17 @@ const reviews = await getCollection('reviews');
 }
 
 <style>
-  .review { display: flex; flex-direction: column; gap: var(--space-md); padding: var(--space-lg); background: rgb(255 255 255 / 0.04); border: 1px solid rgb(255 255 255 / 0.12); border-radius: var(--radius-md); }
-  .review__stars { display: flex; gap: 2px; color: var(--color-star); }
-  .review__sample { align-self: flex-start; padding: 0.1rem 0.45rem; border: 1px solid rgb(255 255 255 / 0.25); border-radius: var(--radius-sm); color: var(--color-on-dark-muted); font-size: var(--text-label-sm); font-weight: 700; letter-spacing: var(--tracking-label-sm); text-transform: uppercase; }
+  .reviews { border-top: 1px solid var(--color-line); }
+  .reviews__grid { display: grid; gap: var(--space-xl) calc(var(--gutter) * 1.5); }
+  @media (min-width: 700px) { .reviews__grid { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1200px) { .reviews__grid { grid-template-columns: repeat(4, 1fr); } }
+  .review { display: flex; flex-direction: column; gap: var(--space-md); padding-top: var(--space-lg); border-top: 1px solid var(--color-line-strong); }
+  .review__stars { display: flex; gap: 2px; color: var(--color-star-ink); }
   .review__stars :global(svg) { fill: currentColor; }
-  .review__stars .off { color: rgb(255 255 255 / 0.25); }
-  blockquote { margin: 0; color: var(--color-on-dark); font-size: var(--text-body); line-height: 1.6; flex: 1; }
+  .review__stars .off { color: var(--color-line-strong); }
+  .review__sample { align-self: flex-start; padding: 0.15rem 0.5rem; border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm); color: var(--color-text-muted); font-size: var(--text-label-sm); font-weight: 600; }
+  blockquote { margin: 0; flex: 1; font-family: var(--font-display); font-size: var(--text-title); font-weight: 400; line-height: 1.5; }
+  :global([data-theme='precision']) blockquote { font-family: var(--font-body); }
   figcaption { display: flex; flex-direction: column; font-size: var(--text-body-sm); }
-  figcaption strong { color: var(--color-on-dark); }
-  figcaption span { color: var(--color-on-dark-muted); }
+  figcaption span { color: var(--color-text-muted); }
 </style>

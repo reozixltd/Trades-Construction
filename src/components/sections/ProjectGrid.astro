@@ -24,8 +24,8 @@ const used = services.filter((s) => projects.some((p) => p.data.service === s.id
       </div>
     )
   }
-  <div class="grid" style="--grid-min: 18rem">
-    {projects.map((p) => <ProjectCard project={p} serviceTitle={titleFor(p.data.service)} />)}
+  <div class="projects">
+    {projects.map((p, i) => <ProjectCard project={p} serviceTitle={titleFor(p.data.service)} index={i} />)}
   </div>
   <p class="filters__status visually-hidden" aria-live="polite" data-filter-status></p>
 </div>
@@ -33,11 +33,17 @@ const used = services.filter((s) => projects.some((p) => p.data.service === s.id
 {filterable && <script>import '@/scripts/project-filter';</script>}
 
 <style>
-  .filters { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-bottom: var(--space-lg); }
+  .projects { display: grid; gap: var(--space-2xl) var(--gutter); }
+  @media (min-width: 640px) { .projects { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1000px) { .projects { grid-template-columns: repeat(3, 1fr); gap: var(--space-2xl) calc(var(--gutter) * 1.5); } }
+
+  .filters { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-bottom: var(--space-xl); }
   .filter {
     min-height: var(--control-height); padding: 0 var(--space-md);
-    background: var(--color-surface); border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm);
+    background: transparent; color: var(--color-text); border: 1px solid var(--color-line-strong); border-radius: var(--radius-full);
     font-size: var(--text-body-sm); font-weight: 600;
+    transition: background-color var(--duration), border-color var(--duration), color var(--duration);
   }
+  @media (hover: hover) { .filter:hover { border-color: var(--color-ink); } }
   .filter[aria-pressed='true'] { background: var(--color-ink); border-color: var(--color-ink); color: var(--color-on-dark); }
 </style>

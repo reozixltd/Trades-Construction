@@ -1,103 +1,150 @@
 ---
+/**
+ * Home hero. Two compositions from one markup:
+ *   film  — a hero clip or its poster exists: full-bleed media, copy over the calm left side.
+ *   plate — neither exists yet: the portrait site photo becomes a tall panel bleeding off the
+ *           right edge (it is too small to fill a desktop screen). Phones get it full-bleed.
+ * The entrance is CSS only, so the headline never waits on JavaScript.
+ */
 import { getCollection } from 'astro:content';
 import { business } from '@/config/business';
 import { telHref } from '@/lib/format';
+import { resolveVideo } from '@/lib/media';
 import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
-import Photo from '../ui/Photo.astro';
+import Video from '../ui/Video.astro';
 
 const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
 const latest = (await getCollection('projects')).find((p) => p.data.featured);
+const media = resolveVideo('hero');
+const film = Boolean(media.src) || media.still === 'hero-poster';
 ---
 
-<section class="hero">
-  <div class="container hero__grid">
+<section class:list={['hero', film ? 'hero--film' : 'hero--plate']}>
+  <div class="hero__media">
+    <Video name="hero" priority parallax sizes={film ? '100vw' : '(min-width: 960px) 44vw, 100vw'} />
+  </div>
+  <div class="hero__shade" aria-hidden="true"></div>
+
+  <div class="container hero__inner">
     <div class="hero__copy">
-      <p class="hero__kicker"><span class="hero__dot" aria-hidden="true"></span>{business.kicker}</p>
-      <h1>
-        {business.headline.trade} in <span class="hero__area">{business.headline.area}</span>
-      </h1>
-      <p class="hero__intro">{business.intro}</p>
+      <p class="hero__kicker" style="--i: 0">{business.kicker}</p>
+      <h1 style="--i: 1">{business.headline.trade} in {business.headline.area}</h1>
+      <p class="hero__intro" style="--i: 2">{business.intro}</p>
 
-      <div class="hero__ctas">
+      <div class="hero__ctas" style="--i: 3">
         <Button href="/quote/" variant="accent" size="lg" iconEnd="arrowRight">Get a quote</Button>
-        <Button href={telHref(business.contact.phone)} variant="outline" size="lg" icon="phone">{business.contact.phone}</Button>
+        <Button href={telHref(business.contact.phone)} variant="on-dark" size="lg" icon="phone">{business.contact.phone}</Button>
       </div>
-      <p class="hero__promise"><Icon name="clock" size={16} /><span data-live="callback">{business.defaults.callbackPromise}</span></p>
-
-      <nav class="hero__services" aria-label="Services">
-        {services.map((s, i) => (
-          <a href={`/services/${s.id}/`}><span class="hero__num">0{i + 1}</span>{s.data.title}</a>
-        ))}
-      </nav>
+      <p class="hero__promise" style="--i: 4"><Icon name="clock" size={16} /><span data-live="callback">{business.defaults.callbackPromise}</span></p>
     </div>
 
-    <div class="hero__media">
-      <Photo slot="hero" ratio="4 / 5" priority sizes="(min-width: 960px) 36vw, 100vw" tone="timber" class="hero__photo" />
-      {latest && (
-        <a class="hero__card" href="/projects/">
-          <p class="hero__card-label">{business.demoMode ? 'Sample project' : 'Latest handover'}</p>
-          <p class="hero__card-title">{latest.data.title}</p>
-          <p class="hero__card-meta">{latest.data.suburb} · {latest.data.duration} · {latest.data.specs[0]?.value}</p>
-        </a>
-      )}
-    </div>
+    {latest && (
+      <a class="hero__card" href="/projects/" style="--i: 6">
+        <span class="hero__card-label">{business.demoMode ? 'Sample project' : 'Latest handover'}</span>
+        <span class="hero__card-title">{latest.data.title}</span>
+        <span class="hero__card-meta">{latest.data.suburb} · {latest.data.duration} · {latest.data.specs[0]?.value}</span>
+      </a>
+    )}
+  </div>
+
+  <div class="container hero__foot">
+    <span class="stringline hero__line" aria-hidden="true"></span>
+    <nav class="hero__services" aria-label="Services" style="--i: 6">
+      {services.map((s) => <a href={`/services/${s.id}/`}>{s.data.title}</a>)}
+    </nav>
   </div>
 </section>
 
 <style>
-  /* Faint blueprint grid behind the hero, fading out toward the bottom. */
   .hero {
-    position: relative;
-    padding-block: var(--space-xl) var(--space-2xl);
-    background-image:
-      linear-gradient(to bottom, transparent, var(--color-canvas) 85%),
-      linear-gradient(var(--color-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--color-line) 1px, transparent 1px);
-    background-size: auto, 48px 48px, 48px 48px;
+    position: relative; isolation: isolate; overflow: hidden;
+    display: flex; flex-direction: column;
+    min-height: clamp(38rem, 100svh - 4.5rem, 60rem);
+    padding-top: calc(var(--header-height) + 1px);
+    background: var(--color-dark); color: var(--color-on-dark);
+    --focus-ring: var(--focus-ring-dark);
   }
-  .hero__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xl); align-items: center; }
-  .hero__kicker {
-    display: inline-flex; align-items: center; gap: var(--space-xs);
-    padding: 0.3rem 0.7rem; margin-bottom: var(--space-md);
-    background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-sm);
-    font-size: var(--text-label); font-weight: 700; letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--color-text-muted);
+  .hero__media { position: absolute; inset: 0; z-index: -2; }
+  .hero__shade {
+    position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      linear-gradient(to top, color-mix(in srgb, var(--color-dark) 96%, transparent) 12%, color-mix(in srgb, var(--color-dark) 84%, transparent) 55%, color-mix(in srgb, var(--color-dark) 58%, transparent) 100%);
   }
-  .hero__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-success); box-shadow: 0 0 0 3px var(--color-success-soft); }
-  .hero h1 { max-width: 16ch; }
-  .hero__area { color: var(--color-accent-text); }
-  .hero__intro { margin-top: var(--space-md); max-width: 36rem; color: var(--color-text-muted); font-size: var(--text-body-lg); line-height: 1.55; }
-  .hero__ctas { display: grid; gap: var(--space-sm); margin-top: var(--space-lg); }
-  @media (min-width: 480px) { .hero__ctas { display: flex; flex-wrap: wrap; } }
-  .hero__promise { display: flex; align-items: center; gap: var(--space-xs); margin-top: var(--space-sm); color: var(--color-text-muted); font-size: var(--text-body-sm); font-weight: 600; }
-  .hero__promise :global(.icon) { color: var(--color-success); }
-  .hero__services { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-top: var(--space-xl); }
-  .hero__services a {
-    display: inline-flex; align-items: center; gap: var(--space-xs);
-    min-height: var(--control-height); padding: 0 var(--space-sm);
-    background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-sm);
-    font-size: var(--text-body-sm); font-weight: 600; text-decoration: none;
-  }
-  .hero__services a:hover { border-color: var(--color-ink); color: var(--color-ink); }
-  .hero__num { color: var(--color-accent-text); font-size: var(--text-label-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
 
-  .hero__media { position: relative; }
-  .hero__media :global(.hero__photo) { aspect-ratio: 16 / 10 !important; }
-  a.hero__card { text-decoration: none; color: var(--color-ink); }
+  .hero__inner { position: relative; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding-block: var(--space-2xl) var(--space-xl); }
+  .hero__copy { max-width: 46rem; }
+  .hero__kicker { margin-bottom: var(--space-md); color: var(--color-on-dark-muted); font-size: var(--text-label); font-weight: 600; }
+  .hero h1 { max-width: 19ch; font-size: clamp(2.375rem, min(1rem + 4.4vw, 9.5svh), 4.75rem); }
+  :global([data-theme='precision']) .hero h1 { max-width: 17ch; font-size: clamp(3rem, min(1.2rem + 5.6vw, 11.5svh), 6rem); }
+  .hero__intro { margin-top: var(--space-lg); max-width: 34rem; color: var(--color-on-dark-muted); font-size: var(--text-body-lg); line-height: 1.55; }
+  .hero__ctas { display: grid; gap: var(--space-sm); margin-top: var(--space-xl); }
+  @media (min-width: 480px) { .hero__ctas { display: flex; flex-wrap: wrap; } }
+  .hero__promise { display: flex; align-items: center; gap: var(--space-xs); margin-top: var(--space-md); color: var(--color-on-dark-muted); font-size: var(--text-body-sm); font-weight: 500; }
+
+  /* Title-block card for the featured job. Desktop only; phones keep the hero to one decision. */
   .hero__card {
     display: none;
-    position: absolute; left: calc(-1 * var(--space-xl)); bottom: var(--space-xl);
-    padding: var(--space-md) var(--space-lg); max-width: 17rem;
-    background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md); box-shadow: var(--shadow-2);
+    position: absolute; right: var(--page-margin); bottom: var(--space-xl);
+    width: 17.5rem; padding: var(--space-md) var(--space-lg) var(--space-md) var(--space-md);
+    background: var(--color-surface); color: var(--color-ink); border-left: 3px solid var(--color-accent);
+    text-decoration: none; box-shadow: var(--shadow-2);
+    transition: transform 420ms var(--ease-out);
   }
-  .hero__card-label { color: var(--color-accent-text); font-size: var(--text-label-sm); font-weight: 700; letter-spacing: var(--tracking-label-sm); text-transform: uppercase; }
-  .hero__card-title { margin-top: 2px; font-family: var(--font-display); font-weight: 700; font-size: var(--text-title); }
-  .hero__card-meta { color: var(--color-text-muted); font-size: var(--text-body-sm); }
+  .hero__card:hover { color: var(--color-ink); }
+  @media (hover: hover) { .hero__card:hover { transform: translateY(-3px); } }
+  .hero__card:focus-visible { box-shadow: var(--focus-ring-dark); }
+  .hero__card span { display: block; }
+  .hero__card-label { color: var(--color-accent-text); font-size: var(--text-label-sm); font-weight: 600; }
+  .hero__card-title { margin-top: 2px; font-family: var(--font-display); font-size: var(--text-title); font-weight: var(--display-weight); text-transform: var(--display-case); line-height: 1.2; }
+  .hero__card-meta { margin-top: var(--space-2xs); color: var(--color-text-muted); font-size: var(--text-body-sm); }
+
+  .hero__foot { position: relative; padding-bottom: var(--space-lg); }
+  .hero__services { display: grid; grid-template-columns: 1fr 1fr; gap: 0 var(--gutter); padding-top: var(--space-xs); }
+  .hero__services a {
+    display: flex; align-items: center; min-height: var(--control-height);
+    color: var(--color-on-dark); font-size: var(--text-body-sm); font-weight: 500; text-decoration: none;
+  }
+  .hero__services a:hover { color: var(--color-accent-on-dark); }
+
+  @media (min-width: 768px) {
+    .hero__services { display: flex; flex-wrap: wrap; gap: 0 var(--space-xl); }
+    .hero__services a { font-size: 0.9375rem; }
+  }
 
   @media (min-width: 960px) {
-    .hero { padding-block: var(--space-2xl) var(--space-3xl); }
-    .hero__grid { grid-template-columns: 1.25fr 0.75fr; gap: var(--space-2xl); }
-    .hero__media :global(.hero__photo) { aspect-ratio: 4 / 5 !important; }
+    .hero__inner { justify-content: center; padding-block: var(--space-xl); }
     .hero__card { display: block; }
+
+    /* film: copy sits on the darker left side of the frame. */
+    .hero--film .hero__shade {
+      background:
+        linear-gradient(90deg, color-mix(in srgb, var(--color-dark) 90%, transparent) 0%, color-mix(in srgb, var(--color-dark) 66%, transparent) 36%, color-mix(in srgb, var(--color-dark) 8%, transparent) 72%),
+        linear-gradient(to top, color-mix(in srgb, var(--color-dark) 80%, transparent) 0%, transparent 34%),
+        linear-gradient(to bottom, color-mix(in srgb, var(--color-dark) 55%, transparent) 0%, transparent 22%);
+    }
+
+    /* plate: the photo is a tall panel on the right; the string line runs into it. */
+    .hero--plate .hero__media { left: auto; width: 44vw; }
+    .hero--plate .hero__shade {
+      background:
+        linear-gradient(90deg, var(--color-dark) 0%, var(--color-dark) 56%, color-mix(in srgb, var(--color-dark) 55%, transparent) 64%, transparent 78%),
+        linear-gradient(to top, color-mix(in srgb, var(--color-dark) 70%, transparent) 0%, transparent 30%),
+        linear-gradient(to bottom, color-mix(in srgb, var(--color-dark) 60%, transparent) 0%, transparent 20%);
+    }
+    .hero--plate .hero__copy { max-width: min(46rem, 54vw); }
   }
+
+  /* Entrance: copy rises in order, then the string line is pulled taut. */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__copy > *, .hero__card, .hero__services {
+      animation: hero-rise 900ms var(--ease-out) both;
+      animation-delay: calc(var(--i) * 90ms + 120ms);
+    }
+    .hero__line { transform-origin: left center; animation: hero-line 1500ms var(--ease-out) 520ms both; }
+    .hero__media { animation: hero-settle 2400ms var(--ease-out) both; }
+  }
+  @keyframes hero-rise { from { opacity: 0; transform: translateY(1.25rem); } }
+  @keyframes hero-line { from { transform: scaleX(0); } }
+  @keyframes hero-settle { from { transform: scale(1.06); } }
 </style>
